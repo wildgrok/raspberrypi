@@ -72,5 +72,5 @@ set ssl-verify=ignore
 set smtp="smtp.gmail.com:587"
 set smtp-auth=login
 set smtp-auth-user="wildgrok"
-set smtp-auth-password="camello1"
+set smtp-auth-password="xxxxxxxx"
 set smtp-from= "noply@beachraspberry.com"
