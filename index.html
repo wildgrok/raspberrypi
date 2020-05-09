@@ -1,0 +1,13 @@
+{% extends 'coronavirus/base.html' %}
+{% block content %}
+{% if latest_link_list %}
+    <ul>
+    {% for link in latest_link_list %}  
+        <li><a href="{{ link.link_text }}">{{ link.link_notes }}</a></li>
+        <br>       
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No links are available.</p>
+{% endif %}
+{% endblock %}
