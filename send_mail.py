@@ -1,12 +1,19 @@
 #smtpserver = "smtp.mail.yahoo.com, 465"
-fromaddress = str('jbesad@yahoo.com')  
-toaddress = str('jbesad@yahoo.com')
-username = str('jbesad@yahoo.com')  
-password = str('mzamaakovmkxqxeg')
-subject = "this is the subject"
-message = "test"
+#fromaddress = str('jbesad@yahoo.com')  
+#toaddress = str('jbesad@yahoo.com')
+#username = str('jbesad@yahoo.com')  
+#password = str('mzamaakovmkxqxeg')
+#subject = "this is the subject"
+#message = "test"
+#def sendmail(toaddress, fromaddress, subject, message, password):
 
-def sendmail(toaddress, fromaddress, subject, message, password):
+def sendmail():
+    fromaddress = str('jbesad@yahoo.com')  
+    toaddress = str('jbesad@yahoo.com')
+    username = str('jbesad@yahoo.com')  
+    password = str('mzamaakovmkxqxeg')
+    subject = "this is the subject"
+    message = "test"
     #Module for sending emails
     import smtplib
     from email.mime.text import MIMEText
@@ -21,4 +28,4 @@ def sendmail(toaddress, fromaddress, subject, message, password):
     server.quit()  
 
 
-sendmail (toaddress, fromaddress, subject, message, password)
+#sendmail (toaddress, fromaddress, subject, message, password)
