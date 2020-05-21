@@ -1,11 +1,12 @@
 __author__ = 'python'
-#
 # Schedule Library imported
 import schedule
 import time
 import send_mail
 import web_get_page
+#from web_get_page import *
 import ipchecker
+#from ipchecker import *
 
 # Functions setup
 
@@ -25,9 +26,14 @@ def check_ip():
 # After every 10mins geeks() is called.
 #schedule.every(1).minutes.do(geeks)
 #schedule.every(1).minutes.do(sendmail)
-#schedule.every(2).minutes.do(get_data)
-schedule.every().day.at("00:00").do(check_ip)
-schedule.every().day.at("08:00").do(get_data)
+#schedule.every(30).minutes.do(get_data)
+#schedule.every(20).minutes.do(check_ip)
+
+schedule.every().day.at("00:30").do(check_ip)
+schedule.every().day.at("07:30").do(get_data)
+
+
+
 # # After every hour geeks() is called.
 schedule.every().hour.do(everyhour)
 #
