@@ -138,6 +138,9 @@ def get_data():
     df_previous['Deaths_Diff_After'] = np.where(df_previous['Deaths'] == df['Deaths'], 0, df['Deaths'] - df_previous['Deaths']) #create new column in df1 for price diff
     df_previous['Mortality_Rate_Diff'] = np.where(df_previous['Mortality_Rate'] == df['Mortality_Rate'], 0, df['Mortality_Rate'] - df_previous['Mortality_Rate']) #create new column in df1 for price diff
 
+    # exporting to csv before sorting by Deaths diff
+    df_previous.to_csv(workfolder + 'Differences_Report.csv')
+
 
     #df_previous = df_previous.sort_values(by=['Deaths Diff'])
     df_previous = df_previous.sort_values(by=['Mortality_Rate_Diff'])
