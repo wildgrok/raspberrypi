@@ -1,5 +1,4 @@
 #!/usr/bin/python3.7
-#Last modified 5/21/2020
 import sys
 import os
 import requests
@@ -7,9 +6,11 @@ import pandas as pd
 import numpy as np
 import datetime
 
-workfolder = '/home/pi/Desktop/'
-webfolder  = '/var/www/html/'
+# workfolder = 'C:\Users\python\PycharmProjects\'
+webfolder = ''
+workfolder = ''
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
+
 
 def writelog(data):
     with open((workfolder + 'web_get_page.out'), 'a+') as f:
@@ -67,7 +68,7 @@ def get_data():
     for col in carsdf.columns:
         writelog(col)
     html = carsdf.to_html()
-    webpage = webfolder + 'car_accident_deaths_usa_2018.html'
+    webpage = workfolder + 'car_accident_deaths_usa_2018.html'
     with open(webpage, 'wt') as f:
         f.write(html)
     #----------------------------------end of adding car deaths 2018--------------------------
@@ -139,6 +140,7 @@ def get_data():
     df_previous['Mortality_Rate_Diff'] = np.where(df_previous['Mortality_Rate'] == df['Mortality_Rate'], 0, df['Mortality_Rate'] - df_previous['Mortality_Rate']) #create new column in df1 for price diff
 
     # exporting to csv before sorting by Deaths diff
+
     df_previous.to_csv(workfolder + 'Differences_Report.csv')
 
 
@@ -162,4 +164,3 @@ def get_data():
 # Run program 
 if __name__ == '__main__':
     get_data()
-
