@@ -1,5 +1,13 @@
 #!/usr/bin/python3.7
-#Last modified 5/21/2020
+#raspberrypi4gb version copied from desktop 6/7/2020
+#last modified
+#6/12/2020 source data changed, includes all countries, had to limit to US see note 6/12/2020
+#6/9/2020 changes in cars
+#5/27/2020 added df['Population_2018'] = carsdf['Population_2018']
+#6/7/2020 adding full original report, fixed mortality rate
+# (no info, means per million, 100,000 noted
+#
+
 import sys
 import os
 import requests
@@ -7,9 +15,11 @@ import pandas as pd
 import numpy as np
 import datetime
 
+# workfolder = 'C:\Users\python\PycharmProjects\'
+webfolder = '/var/www/html/'
 workfolder = '/home/pi/Desktop/'
-webfolder  = '/var/www/html/'
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
+
 
 def writelog(data):
     with open((workfolder + 'web_get_page.out'), 'a+') as f:
@@ -56,12 +66,17 @@ def get_data():
     weekagofile = get_csv_filename(weekago) 
     writelog(yesterdayfile)
     writelog(weekagofile)
-      
     get_data_to_csv(yesterdayfile, urlbase)
 
     #----------------------------------adding car deaths 2018------------------------------
+    #THIS IS A ONE TIME, DON'T REDO EVERYTIME (for later)
     # Province_State,Population_2018,Vehicle miles traveled (millions),Fatal crashes,Deaths_Car_2018,"Deaths per 100,000 population",Deaths per 100 million vehicle miles traveled
     carsdf = pd.read_csv((workfolder + 'car_accident_deaths_usa_2018.csv'), encoding = 'latin1')
+    
+    #new 6/9/2020 adding column Deaths per 100,000 population * 10
+    carsdf['Cars_Mortality_Rate_2018'] = carsdf['Deaths per 100,000 population'] * 10 
+    
+    
     writelog('these are the columns for car deaths 2018')
     carsdf = carsdf.set_index('Province_State')
     for col in carsdf.columns:
@@ -76,10 +91,11 @@ def get_data():
     # Province_State,Births,Fertility_Rate,Deaths,Death_Rate
     # file: deaths_usa_2018.csv
     deaths2018df = pd.read_csv((workfolder + 'deaths_usa_2018.csv'), encoding = 'latin1')
-    writelog('these are the columns for all deaths 2018')
     deaths2018df = deaths2018df.set_index('Province_State')
     deaths2018df = deaths2018df.drop(['Births','Fertility_Rate'], axis=1)
     deaths2018df['Population_2018'] = carsdf['Population_2018']
+    deaths2018df = deaths2018df.rename(columns={"Death_Rate": "Death_Rate_per_1000000"})
+    #Deaths,Death_Rate,Population_2018
     writelog('these are the columns - all deaths 2018')
     for col in deaths2018df.columns:
         writelog(col)
@@ -89,9 +105,10 @@ def get_data():
          f.write(html2)
     #---------------------------------end of adding all deaths 2018---------------------------
 
-
-
-    df = pd.read_csv((workfolder + yesterdayfile), encoding = 'latin1')
+    #6/12/2020
+    country = ['US']
+    df1 = pd.read_csv((workfolder + yesterdayfile), encoding = 'latin1')
+    df = df1[df1['Country_Region'].isin(country)]
     df = df.set_index('Province_State')
 
     # for later: check for no file FileNotFoundError: [Errno 2] No such file or directory: '05-02-2020.csv'
@@ -101,10 +118,25 @@ def get_data():
     df_previous = pd.read_csv((workfolder + weekagofile), encoding = 'latin1')
     df_previous = df_previous.set_index('Province_State')
 
+    #New 6/7/2020, saving full report with all the original columns
+    writelog('these are all the columns - current full')
+    #Country_Region,Last_Update Lat Long_ Confirmed Deaths
+    # Recovered Active FIPS Incident_Rate
+    # People_Tested People_Hospitalized Mortality_Rate UID
+    #ISO3 Testing_Rate Hospitalization_Rate
+    for col in df.columns:
+        writelog(col)
+    html = df.to_html()
+    webpage = webfolder + 'full_daily_report.html'
+    with open(webpage, 'wt') as f:
+        f.write(html)
 
     #Province_State Country_Region  Last_Update Lat Long_   Confirmed   Deaths  Recovered   Active  FIPS    Incident_Rate   People_Tested   People_Hospitalized Mortality_Rate  UID ISO3    Testing_Rate    Hospitalization_Rate
     df = df.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3',    'Testing_Rate',    'Hospitalization_Rate'], axis=1)
-    writelog('these are the columns - current')
+    #added population 2018
+    df['Population_2018'] = carsdf['Population_2018']
+    writelog('these are the columns - current after dropping columns')
+    #Last_Update Deaths Mortality_Rate Population_2018
     for col in df.columns:
         writelog(col)
     html = df.to_html()
@@ -125,11 +157,13 @@ def get_data():
     #link to cars dataframe
     df_previous['Population_2018'] = carsdf['Population_2018']
     df_previous['Deaths_Car_2018'] = carsdf['Deaths_Car_2018']
-    df_previous['Mortality_Rate_Cars_2018'] = carsdf['Deaths per 100,000 population']
+    #df_previous['Cars_2018_Death_Rate_Per_100000'] = carsdf['Deaths per 100,000 population']
+    #new 6/9/2020
+    df_previous['Cars_Mortality_Rate_2018'] = carsdf['Cars_Mortality_Rate_2018']
+
     #link to deaths 2018 dataframe
     df_previous['Deaths_All_2018'] = deaths2018df['Deaths']
-    # df_previous['Death_Rate_All_2018'] = deaths2018df['Death_Rate']
-    df_previous['Mortality_Rate_All_2018'] = deaths2018df['Death_Rate']
+    df_previous['Mortality_Rate_All_Causes_2018'] = deaths2018df['Death_Rate_per_1000000']
 
 
     #links to current week
@@ -139,6 +173,7 @@ def get_data():
     df_previous['Mortality_Rate_Diff'] = np.where(df_previous['Mortality_Rate'] == df['Mortality_Rate'], 0, df['Mortality_Rate'] - df_previous['Mortality_Rate']) #create new column in df1 for price diff
 
     # exporting to csv before sorting by Deaths diff
+
     df_previous.to_csv(workfolder + 'Differences_Report.csv')
 
 
@@ -162,4 +197,3 @@ def get_data():
 # Run program 
 if __name__ == '__main__':
     get_data()
-

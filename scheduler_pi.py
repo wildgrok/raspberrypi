@@ -4,11 +4,16 @@ import schedule
 import time
 import send_mail
 import web_get_page
-#from web_get_page import *
 import ipchecker
-#from ipchecker import *
+import subprocess
+
+
+
 
 # Functions setup
+
+def copy_to_website():
+    rc = subprocess.call("/var/www/html/upload.sh")
 
 def everyhour():
     print("I am running every hour")
@@ -17,6 +22,7 @@ def sendmail():
     send_mail.sendmail()
     
 def get_data():
+    print('getting data')
     web_get_page.get_data()
     
 def check_ip():
@@ -26,11 +32,12 @@ def check_ip():
 # After every 10mins geeks() is called.
 #schedule.every(1).minutes.do(geeks)
 #schedule.every(1).minutes.do(sendmail)
-#schedule.every(30).minutes.do(get_data)
-#schedule.every(20).minutes.do(check_ip)
+#schedule.every(60).minutes.do(get_data)
+#schedule.every(1).minutes.do(check_ip)
 
 schedule.every().day.at("00:30").do(check_ip)
-schedule.every().day.at("07:30").do(get_data)
+schedule.every().day.at("06:30").do(get_data)
+schedule.every().day.at("07:30").do(copy_to_website)
 
 
 
