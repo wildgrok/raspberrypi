@@ -4,6 +4,7 @@ import schedule
 import time
 import send_mail
 import web_get_page
+import web_get_page_world
 import ipchecker
 import subprocess
 
@@ -22,8 +23,12 @@ def sendmail():
     send_mail.sendmail()
     
 def get_data():
-    print('getting data')
+    print('getting data USA')
     web_get_page.get_data()
+    
+def get_data_spain():
+    print('getting data Spain')
+    web_get_page_world.get_data()    
     
 def check_ip():
     ipchecker.check_ip()
@@ -37,6 +42,7 @@ def check_ip():
 
 schedule.every().day.at("00:30").do(check_ip)
 schedule.every().day.at("06:30").do(get_data)
+schedule.every().day.at("07:00").do(get_data_spain)
 schedule.every().day.at("07:30").do(copy_to_website)
 
 
