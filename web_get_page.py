@@ -14,6 +14,8 @@ import requests
 import pandas as pd
 import numpy as np
 import datetime
+#6/18/2020
+from pathlib import Path
 
 # workfolder = 'C:\Users\python\PycharmProjects\'
 webfolder = '/var/www/html/'
@@ -112,8 +114,11 @@ def get_data():
     df = df.set_index('Province_State')
 
     # for later: check for no file FileNotFoundError: [Errno 2] No such file or directory: '05-02-2020.csv'
-    if os.path.exists(workfolder + weekagofile) == False:
+    #6/18/2020
+    if (os.path.exists(workfolder + weekagofile) == False) or (Path(workfolder + weekagofile).stat().st_size > 12000):
         weekagofile = yesterdayfile
+        writelog('Bad file format week ago')
+        
 
     df_previous = pd.read_csv((workfolder + weekagofile), encoding = 'latin1')
     df_previous = df_previous.set_index('Province_State')
@@ -143,8 +148,14 @@ def get_data():
     webpage = webfolder + 'yesterday.html'
     with open(webpage, 'wt') as f:        
         f.write(html)
-        
-    df_previous = df_previous.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3',    'Testing_Rate',    'Hospitalization_Rate'], axis=1)
+    
+    #6/18/2020
+    #try:
+        df_previous = df_previous.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3',    'Testing_Rate',    'Hospitalization_Rate'], axis=1)
+    #except KeyError:
+    #    pass
+    #finally:
+    #    pass
     writelog('these are the columns - previous')
     for col in df_previous.columns:
         writelog(col)
