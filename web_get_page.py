@@ -1,6 +1,8 @@
 #!/usr/bin/python3.7
-#desktop version
+#raspberrypi4 version
 #last modified
+#6/28/2020 issues with 7 day report
+#6/25/2020 completed new report
 #6/24/2020 started to work on new report (no mortality rate, just deaths and differences
 #6/19/2020 fixed bad data from source (imported manually missing csvs)
 #5/27/2020 added df['Population_2018'] = carsdf['Population_2018']
@@ -18,9 +20,10 @@ import io
 
 
 # workfolder = 'C:\Users\python\PycharmProjects\'
-webfolder = ''
-workfolder = ''
-csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv/'
+webfolder = '/var/www/html/'
+workfolder = '/home/pi/Desktop/'
+#csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv/'
+csvfolder = '/home/pi/Desktop/'
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
 
 
@@ -37,8 +40,6 @@ def get_csv_filename(datestr):
     if len(day) < 2:
         day = '0' + day
     file = month + '-' + day + '-' + year + '.csv'
-    #6/19/2020
-    #file = year + '-'+ month + '-' + day + '.csv'
     return file
 
 def get_data_to_csv(csvfile, urlbase):
@@ -110,7 +111,7 @@ def get_data():
     html2 = deaths2018df.to_html()
     webpage2 = webfolder + 'deaths_usa_2018.html'
     with open(webpage2, 'wt') as f:
-         f.write(html2)
+        f.write(html2)
     #---------------------------------end of adding all deaths 2018---------------------------
 
     #6/12/2020
@@ -132,9 +133,8 @@ def get_data():
     if os.path.exists(csvfolder + weekagofile) == False:
         weekagofile = yesterdayfile
 
-    #6/17/2020
-    df_previous = pd.read_csv((csvfolder + weekagofile), encoding = 'latin1')
-    df_previous = df_previous.set_index('Province_State')
+
+        
 
     #New 6/7/2020, saving full report with all the original columns
     writelog('these are all the columns - current full')
@@ -151,6 +151,12 @@ def get_data():
 
     #Province_State Country_Region  Last_Update Lat Long_   Confirmed   Deaths  Recovered   Active  FIPS    Incident_Rate   People_Tested   People_Hospitalized Mortality_Rate  UID ISO3    Testing_Rate    Hospitalization_Rate
     df = df.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3',    'Testing_Rate',    'Hospitalization_Rate'], axis=1)
+    
+    
+    
+    
+    
+    
     #added population 2018
     df['Population_2018'] = carsdf['Population_2018']
     writelog('these are the columns - current after dropping columns')
@@ -162,7 +168,16 @@ def get_data():
     with open(webpage, 'wt') as f:        
         f.write(html)
         
-    df_previous = df_previous.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3',    'Testing_Rate',    'Hospitalization_Rate'], axis=1)
+    #6/28 commented
+    col_list = ['Country_Region', 'Province_State', 'Last_Update', 'Deaths', 'Mortality_Rate']
+    df_previous = pd.read_csv((csvfolder + yesterdayfile), encoding = 'latin1', usecols=col_list)    
+        
+        
+    
+    #df_previous = pd.read_csv((csvfolder + weekagofile), encoding = 'latin1')
+    #df_previous = df_previous.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3',    'Testing_Rate',    'Hospitalization_Rate'], axis=1)
+    df_previous = df_previous.set_index('Province_State')
+    df_previous = df_previous[df_previous['Country_Region'].isin(country)]
     writelog('these are the columns - previous')
     for col in df_previous.columns:
         writelog(col)
@@ -186,9 +201,9 @@ def get_data():
 
     #links to current week
     df_previous['Deaths_After'] = df['Deaths']                 #add the Price2 column from df2 to df1
-    df_previous['Mortality_Rate_After'] = df['Mortality_Rate'] #add the Price2 column from df2 to df1
-    df_previous['Deaths_Diff_After'] = np.where(df_previous['Deaths'] == df['Deaths'], 0, df['Deaths'] - df_previous['Deaths']) #create new column in df1 for price diff
-    df_previous['Mortality_Rate_Diff'] = np.where(df_previous['Mortality_Rate'] == df['Mortality_Rate'], 0, df['Mortality_Rate'] - df_previous['Mortality_Rate']) #create new column in df1 for price diff
+    #df_previous['Mortality_Rate_After'] = df['Mortality_Rate'] #add the Price2 column from df2 to df1
+    #df_previous['Deaths_Diff_After'] = np.where(df_previous['Deaths'] == df['Deaths'], 0, df['Deaths'] - df_previous['Deaths']) #create new column in df1 for price diff
+    #df_previous['Mortality_Rate_Diff'] = np.where(df_previous['Mortality_Rate'] == df['Mortality_Rate'], 0, df['Mortality_Rate'] - df_previous['Mortality_Rate']) #create new column in df1 for price diff
 
     # exporting to csv before sorting by Deaths diff
 
@@ -196,7 +211,7 @@ def get_data():
 
 
     #df_previous = df_previous.sort_values(by=['Deaths Diff'])
-    df_previous = df_previous.sort_values(by=['Mortality_Rate_Diff'])
+    #df_previous = df_previous.sort_values(by=['Mortality_Rate_Diff'])
 
     writelog('these are the columns - added Mortality Rate After, Deaths After, MD Diff, Deaths Diff, Deaths_2018, Death_Rate_2018')
     for col in df_previous.columns:
@@ -213,8 +228,8 @@ def get_data():
 
     #NEW REPORT 6/24/2020
     df_previous = df_previous.sort_values(by=['Province_State'])
-    df_new = df_previous.drop(['Mortality_Rate','Cars_Mortality_Rate_2018', 'Mortality_Rate_All_Causes_2018','Mortality_Rate_After','Mortality_Rate_Diff','Deaths_Car_2018'], axis=1)
-    # df_new['Deaths_Diff_%_of Population_2018'] = df_new['Deaths_Diff_After'].divide(df_new['Population_2018']) * 100
+    df_new = df_previous
+    #df_new = df_previous.drop(['Mortality_Rate','Cars_Mortality_Rate_2018', 'Mortality_Rate_All_Causes_2018','Mortality_Rate_After','Mortality_Rate_Diff','Deaths_Car_2018'], axis=1)
     df_new['Deaths_%_of Population_2018'] = df_new['Deaths'].divide(df_new['Population_2018']) * 100
     #df_new['Deaths_Cars_%_of Population_2018'] = df_new['Deaths_Car_2018'].divide(df_new['Population_2018']) * 100
     df_new = df_new.sort_values(by=['Deaths_%_of Population_2018'])
