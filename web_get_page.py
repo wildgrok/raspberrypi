@@ -213,10 +213,11 @@ def get_data():
 
     #NEW REPORT 6/24/2020
     df_previous = df_previous.sort_values(by=['Province_State'])
-    df_new = df_previous.drop(['Mortality_Rate','Cars_Mortality_Rate_2018', 'Mortality_Rate_All_Causes_2018','Mortality_Rate_After','Mortality_Rate_Diff'], axis=1)
-    df_new['Deaths_Diff_%_of Population_2018'] = df_new['Deaths_Diff_After'].divide(df_new['Population_2018']) * 100
-    df_new['Deaths_Cars_%_of Population_2018'] = df_new['Deaths_Car_2018'].divide(df_new['Population_2018']) * 100
-    df_new = df_new.sort_values(by=['Deaths_Diff_%_of Population_2018'])
+    df_new = df_previous.drop(['Mortality_Rate','Cars_Mortality_Rate_2018', 'Mortality_Rate_All_Causes_2018','Mortality_Rate_After','Mortality_Rate_Diff','Deaths_Car_2018'], axis=1)
+    # df_new['Deaths_Diff_%_of Population_2018'] = df_new['Deaths_Diff_After'].divide(df_new['Population_2018']) * 100
+    df_new['Deaths_%_of Population_2018'] = df_new['Deaths'].divide(df_new['Population_2018']) * 100
+    #df_new['Deaths_Cars_%_of Population_2018'] = df_new['Deaths_Car_2018'].divide(df_new['Population_2018']) * 100
+    df_new = df_new.sort_values(by=['Deaths_%_of Population_2018'])
 
     writelog('these are the columns of the new report')
     for col in df_new.columns:
