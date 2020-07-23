@@ -1,6 +1,7 @@
 #!/usr/bin/python3.7
 #desktop version
 #last modified
+# added new report with yesterday data
 #6/24/2020 started to work on new report (no mortality rate, just deaths and differences
 #6/19/2020 fixed bad data from source (imported manually missing csvs)
 #5/27/2020 added df['Population_2018'] = carsdf['Population_2018']
@@ -76,6 +77,11 @@ def get_data():
     writelog(yesterdayfile)
     writelog(weekagofile)
     get_data_to_csv(yesterdayfile, urlbase)
+
+    # 7/16/2020
+
+
+
 
 
     #----------------------------------adding car deaths 2018------------------------------
@@ -224,6 +230,33 @@ def get_data():
         writelog(col)
     html = df_new.to_html()
     webpage = webfolder + 'differences_new.html'
+    with open(webpage, 'wt') as f:
+        f.write(html)
+
+    # 7/16/2020
+    dayago = today - datetime.timedelta(days=2)
+    dayagofile = get_csv_filename(dayago)
+    df_previous_day = pd.read_csv((csvfolder + dayagofile), encoding = 'latin1')
+    df_previous_day = df_previous_day.set_index('Province_State')
+    df_previous_day = df_previous_day.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate', 'Mortality_Rate'], axis=1)
+    df_previous_day['Population_2018'] = carsdf['Population_2018']
+    df_previous_day['Deaths_%_of Population_2018'] = df_previous_day['Deaths'].divide(df_previous_day['Population_2018']) * 100
+    df_previous_day['New_Deaths'] = np.where(df_previous_day['Deaths'] == df['Deaths'], 0, df['Deaths'] - df_previous_day['Deaths']) #create new column in df1 for price diff
+
+    #df_previous_day = df_previous_day.sort_values(by=['Province_State'])
+    #df_new = df_previous_day
+    #df_new = df_previous_day.drop(['Mortality_Rate','Cars_Mortality_Rate_2018', 'Mortality_Rate_All_Causes_2018','Mortality_Rate_After','Mortality_Rate_Diff','Deaths_Car_2018'], axis=1)
+    # df_new['Deaths_Diff_%_of Population_2018'] = df_new['Deaths_Diff_After'].divide(df_new['Population_2018']) * 100
+    #df_new['Deaths_%_of Population_2018'] = df_new['Deaths'].divide(df_new['Population_2018']) * 100
+    #df_new['Deaths_Cars_%_of Population_2018'] = df_new['Deaths_Car_2018'].divide(df_new['Population_2018']) * 100
+    #df_new = df_new.sort_values(by=['Deaths_%_of Population_2018'])
+    df_previous_day = df_previous_day.sort_values(by=['New_Deaths'])
+
+    writelog('these are the columns of the report for previous day')
+    for col in df_previous_day.columns:
+        writelog(col)
+    html = df_previous_day.to_html()
+    webpage = webfolder + 'differences_new_one_day.html'
     with open(webpage, 'wt') as f:
         f.write(html)
 
