@@ -37,6 +37,23 @@ def get_csv_filename(datestr):
     file = month + '-' + day + '-' + year + '.csv'
     return file
 
+def make_html(table, total):
+    today = str(datetime.date.today())
+    s = '<html>'
+    s = s + '<body>'
+    s = '<h1>Coronavirus USA Data - updated daily</h1>'
+    s = s + '<br><b>Date run: ' + today + '</b><br>'
+    s = s + table
+    s = s + '<b> Total new deaths for today: ' + str(total) + '</b>'
+    s = s + '<p>'
+    s = s  + '<a href="references2.html">Misc links</a><p>'
+    s = s  + '<a href="index_old.html">Link to original site</a><p>'
+    s = s + '</body>'
+    s = s + '</html>'
+    webpage = webfolder + 'index.html'
+    with open(webpage, 'wt') as f:
+        f.write(s)
+
 def get_data_to_csv(csvfile, urlbase):
     url = urlbase + csvfile
     writelog(url)
@@ -65,20 +82,12 @@ def get_data():
 
 
     #----------------------------------adding car deaths 2018, needed for population 2018------------------------------
-    #THIS IS A ONE TIME, DON'T REDO EVERYTIME (for later)
-    # Province_State,Population_2018,Vehicle miles traveled (millions),Fatal crashes,Deaths_Car_2018,"Deaths per 100,000 population",Deaths per 100 million vehicle miles traveled
     carsdf = pd.read_csv((workfolder + 'car_accident_deaths_usa_2018.csv'), encoding = 'latin1', thousands=',')
     #8/13/2020 only need population and car deaths
     carsdf = carsdf.set_index('Province_State')
     carsdf = carsdf.drop(['Vehicle miles traveled (millions)','Fatal crashes', "Deaths per 100,000 population", 'Deaths per 100 million vehicle miles traveled'], axis=1)
-    #carsdf = carsdf.astype({'Population_2018': 'int32'}).dtypes
     carsdf = carsdf[['Population_2018']].apply(pd.to_numeric)
-    print(carsdf)
-    # exit()
-    # carsdf = carsdf.astype('int32').dtypes
     writelog('these are the columns for car deaths 2018')
-    # Population_2018
-    # Deaths_Car_2018
 
     for col in carsdf.columns:
         writelog(col)
@@ -86,7 +95,6 @@ def get_data():
     webpage = webfolder + 'car_accident_deaths_usa_2018_2.html'
     with open(webpage, 'wt') as f:
         f.write(html_cars)
-    # exit()
     #----------------------------------end of adding car deaths 2018--------------------------
 
 
@@ -100,17 +108,12 @@ def get_data():
     #Adding population 2018
     deaths2018df['Population_2018'] = carsdf['Population_2018']
     deaths2018df = deaths2018df.rename(columns={"Deaths": "Deaths_All_Causes"})
-    # deaths2018df = deaths2018df[['Population_2018']].apply(pd.to_numeric)
     #Deaths,Population_2018
     writelog('these are the columns - all deaths 2018')
     for col in deaths2018df.columns:
         writelog(col)
-    html2 = deaths2018df.to_html()
-    webpage2 = webfolder + 'deaths_usa_2018_2.html'
-    with open(webpage2, 'wt') as f:
-         f.write(html2)
-    # exit()
     #---------------------------------end of adding all deaths 2018---------------------------
+
 
     country = ['US']
     df1 = pd.read_csv((csvfolder + yesterdayfile), encoding = 'latin1')
@@ -133,10 +136,7 @@ def get_data():
     total = df_previous_day['New_Deaths'].sum()
     print(total)
     html = df_previous_day.to_html(na_rep='')
-    html = html + '<b> Total new deaths for today: ' + str(total) + '</b>'
-    webpage = webfolder + 'differences_new_one_day2.html'
-    with open(webpage, 'wt') as f:
-        f.write(html)
+    make_html(html, total)
 
     #
     # country = ['US']
