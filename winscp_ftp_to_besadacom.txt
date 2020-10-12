@@ -1,0 +1,21 @@
+# Connect to SFTP server using a password
+open ftp://jbesada:Camello2183@besada.com
+
+lcd C:\Users\python\PycharmProjects
+cd public_html
+cd coronavirus
+
+put index.html
+put index_old.html
+put yesterday.html
+put previous.html
+put difference.html
+put readme.html
+put differences_new.html
+put differences_new_one_day.html
+put daily_report_spain.html
+put full_daily_report.html
+put references.html
+put references2.html
+
+exit

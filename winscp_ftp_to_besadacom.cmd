@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\WinSCP\winscp.com" /ini=nul /script=C:\Users\python\PycharmProjects\winscp_ftp_to_besadacom.txt
