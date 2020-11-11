@@ -4,7 +4,9 @@
 #version in desktop
 #from web_get_page.py as of 8/13/2020
 #last modified
-#
+#11/11/2020 fixing error see file errors_11_11_2020.txt
+#KeyError: "['People_Tested' 'Mortality_Rate'] not found in axis" in line 131
+
 
 import sys
 import os
@@ -13,11 +15,13 @@ import pandas as pd
 import numpy as np
 import datetime
 import io
+import matplotlib.pyplot as plt
 
 
 # workfolder = 'C:\Users\python\PycharmProjects\'
 webfolder = ''
 workfolder = ''
+picsfolder = 'C:/Users/python/PycharmProjects/coronavirus/pics/'
 csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
 
@@ -126,7 +130,13 @@ def get_data():
     dayagofile = get_csv_filename(dayago)
     df_previous_day = pd.read_csv((csvfolder + dayagofile), encoding = 'latin1',thousands=',')
     df_previous_day = df_previous_day.set_index('Province_State')
-    df_previous_day = df_previous_day.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate', 'Mortality_Rate'], axis=1)
+
+    #11/11/2020
+    # df_previous_day = df_previous_day.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate', 'Mortality_Rate'], axis=1)
+    df_previous_day = df_previous_day.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',                        'People_Hospitalized',  'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate'                  ], axis=1)
+    df_previous_day = df_previous_day.drop(['Total_Test_Results',	'Case_Fatality_Ratio'], axis=1)
+
+
     df_previous_day['Population_2018'] = carsdf['Population_2018']
     df_previous_day['Deaths_As_%_of Population_2018'] = df_previous_day['Deaths'].divide(df_previous_day['Population_2018']) * 100
     df_previous_day['New_Deaths'] = np.where(df_previous_day['Deaths'] == df['Deaths'], 0, df['Deaths'] - df_previous_day['Deaths']) #create new column in df1 for price diff
@@ -137,6 +147,25 @@ def get_data():
     print(total)
     html = df_previous_day.to_html(na_rep='')
     make_html(html, total)
+
+    #----------------
+    # df = pd.DataFrame({
+    # 'sales': [3, 2, 3, 9, 10, 6],
+    # 'signups': [5, 5, 6, 12, 14, 13],
+    # 'visits': [20, 42, 28, 62, 81, 50],}, index=pd.date_range(start='2018/01/01', end='2018/07/01',
+    #                    freq='M'))
+    # ax = df.plot.area()
+    # ax.plot()
+    # df.plot()
+    # # plt.show()
+    # plt.savefig("c://DOWNLOADS/plot.jpg")
+    # df_previous_day.set_index(pd.date_range(start='2020/08/01', end='2020/10/01', freq='D'))
+    # ax = df_previous_day.plot.area()
+    # plt.savefig(picsfolder + df_previous_day['Province_State'])
+
+
+    #----------------
+
 
     #
     # country = ['US']
