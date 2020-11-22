@@ -31,13 +31,16 @@ statedeathsfolder = r'C:\Users\python\PycharmProjects\coronavirus\state_deaths'
 
 
 
-#get distinct list of states
+#get distinct list of states--------------------------------------------
 states = 'select distinct Province_State from coronavirus.data_usa2;'
 # sql = "SELECT * FROM coronavirus.data_usa2 where Province_State = 'Florida' order by 3 desc,1,2;"
 # cmd = '"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql" -udatareader -pdatareader -e "' + states
 cmd = r'"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -udatareader -pdatareader -e "' + states
 lst_states = os.popen(cmd).readlines()
+#------------------------------------------------------------------------
 # print(lst)
+
+#get txt--------------------------------------------------------------------
 for x in lst_states:
     state = x.rstrip('\n')
     print(state)
@@ -49,14 +52,17 @@ for x in lst_states:
     statefile = statedeathsfolder + '\\' + state + '.txt'
     with open(statefile, 'w') as f:
         f.writelines(lst2)
+#-------------------------------------------------------------------------
 #         f.writelines('\n')
 #         # f.write(x+ '\n')
 
-#11/21/2020 - json output
+
+
+#11/21/2020 - json output----------------------------------------------------
 for x in lst_states:
     state = x.rstrip('\n')
     # print(state)
-    sql = "select json_object('Last_Update', Last_Update, 'Deaths',Deaths) from coronavirus.data_usa2 where Province_State = '" + state + "'"
+    sql = "select json_object('Last_Update', Last_Update, 'Deaths',Deaths) from coronavirus.data_usa2 where Province_State = '" + state + "' order by Province_State;"
     #sql = "SELECT Last_Update,Deaths FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
     # print(sql)
     cmd = r'"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -udatareader -pdatareader -e "' + sql
@@ -65,3 +71,23 @@ for x in lst_states:
     statefile = statedeathsfolder + '\\' + state + '.json'
     with open(statefile, 'w') as f:
         f.writelines(lst2)
+#-------------------------------------------------------------------------
+
+
+
+#csv output----------------------------------------------------------------
+for x in lst_states:
+    state = x.rstrip('\n')
+    # sql = "SELECT 'Last_Update,'Deaths';"
+    # sql = sql + "UNION ALL "
+    sql = "SELECT CONCAT_WS(',',Last_Update,Deaths) "
+    sql = sql + "FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
+    print(sql)
+    cmd = r'"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -udatareader -pdatareader  -e "' + sql
+    lst3 = os.popen(cmd).readlines()
+    # print(lst2[0:10])
+    statefile = statedeathsfolder + '\\' + state + '.csv'
+    with open(statefile, 'w') as f:
+        f.writelines('Last_Update,Deaths\n')
+        f.writelines(lst3[1:])
+#------------------------------------------------------------------------
