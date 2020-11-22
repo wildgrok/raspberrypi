@@ -7,7 +7,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 #pd.options.plotting.backend
 
-df = pd.read_csv((r'C:\Users\python\PycharmProjects\coronavirus\state_deaths\Florida.csv'), encoding = 'latin1', thousands=',')
+# df = pd.read_csv((r'C:\Users\python\PycharmProjects\coronavirus\state_deaths\Florida.csv'), encoding = 'latin1', thousands=',')
+df = pd.read_csv((r'C:\downloads\Florida2.csv'), encoding = 'latin1', thousands=',')
+
 # df = pd.DataFrame({
 #     'sales': [3, 2, 3, 9, 10, 6],
 #     'signups': [5, 5, 6, 12, 14, 13],
