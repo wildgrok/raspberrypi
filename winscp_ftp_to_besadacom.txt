@@ -18,4 +18,10 @@ put full_daily_report.html
 put references.html
 put references2.html
 
+lcd C:\Users\python\PycharmProjects\coronavirus\state_deaths
+cd /public_html
+cd coronavirus
+cd statedeaths
+put *.txt
+
 exit
