@@ -1,6 +1,7 @@
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.area.html
 # created from plots.py 11/14/2020
 # last update:
+#11/21/2020: created json files
 #11/21/2020: created state deaths files
 
 import pandas as pd
@@ -35,9 +36,9 @@ states = 'select distinct Province_State from coronavirus.data_usa2;'
 # sql = "SELECT * FROM coronavirus.data_usa2 where Province_State = 'Florida' order by 3 desc,1,2;"
 # cmd = '"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql" -udatareader -pdatareader -e "' + states
 cmd = r'"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -udatareader -pdatareader -e "' + states
-lst = os.popen(cmd).readlines()
+lst_states = os.popen(cmd).readlines()
 # print(lst)
-for x in lst:
+for x in lst_states:
     state = x.rstrip('\n')
     print(state)
     sql = "SELECT Last_Update,Deaths FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
@@ -50,3 +51,17 @@ for x in lst:
         f.writelines(lst2)
 #         f.writelines('\n')
 #         # f.write(x+ '\n')
+
+#11/21/2020 - json output
+for x in lst_states:
+    state = x.rstrip('\n')
+    # print(state)
+    sql = "select json_object('Last_Update', Last_Update, 'Deaths',Deaths) from coronavirus.data_usa2 where Province_State = '" + state + "'"
+    #sql = "SELECT Last_Update,Deaths FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
+    # print(sql)
+    cmd = r'"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -udatareader -pdatareader -e "' + sql
+    lst2 = os.popen(cmd).readlines()
+    # print(lst2[0:10])
+    statefile = statedeathsfolder + '\\' + state + '.json'
+    with open(statefile, 'w') as f:
+        f.writelines(lst2)
