@@ -10,19 +10,19 @@ import matplotlib.pyplot as plt
 #pd.options.plotting.backend
 import os
 
-df = pd.DataFrame({
-    'sales': [3, 2, 3, 9, 10, 6],
-    'signups': [5, 5, 6, 12, 14, 13],
-    'visits': [20, 42, 28, 62, 81, 50],
-}, index=pd.date_range(start='2018/01/01', end='2018/07/01',
-                       freq='M'))
-ax = df.plot.area()
-ax.plot()
-df.plot()
-# plt.show()
-plt.savefig("c://DOWNLOADS/plot.jpg")
-# print(ax)
-# matplotlib.validate_backend
+# df = pd.DataFrame({
+#     'sales': [3, 2, 3, 9, 10, 6],
+#     'signups': [5, 5, 6, 12, 14, 13],
+#     'visits': [20, 42, 28, 62, 81, 50],
+# }, index=pd.date_range(start='2018/01/01', end='2018/07/01',
+#                        freq='M'))
+# ax = df.plot.area()
+# ax.plot()
+# df.plot()
+# # plt.show()
+# plt.savefig("c://DOWNLOADS/plot.jpg")
+# # print(ax)
+# # matplotlib.validate_backend
 
 
 #list of csv files
@@ -44,9 +44,19 @@ lst_states = os.popen(cmd).readlines()
 for x in lst_states:
     state = x.rstrip('\n')
     print(state)
-    sql = "SELECT Last_Update,Deaths FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
+
+    s = " SELECT a.Last_Update ,b.Deaths - a.Deaths as Deaths "
+    s = s + "  FROM coronavirus.data_usa2 a "
+    s = s + " join coronavirus.data_usa2 b on "
+    s = s + " date(b.Last_Update) > date(a.Last_Update) and "
+    s = s + " date(b.Last_Update) <= date(a.Last_Update) + 1 and "
+    s = s + " b.Province_State = a.Province_State "
+    s = s + " where a.Province_State = '" + state + "'"
+    s = s + " order by 1"
+
+    # sql = "SELECT Last_Update,Deaths FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
     # print(sql)
-    cmd = r'"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -udatareader -pdatareader -e "' + sql
+    cmd = r'"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -udatareader -pdatareader -e "' + s
     lst2 = os.popen(cmd).readlines()
     # print(lst2[0:10])
     statefile = statedeathsfolder + '\\' + state + '.txt'
@@ -62,10 +72,19 @@ for x in lst_states:
 for x in lst_states:
     state = x.rstrip('\n')
     # print(state)
-    sql = "select json_object('Last_Update', Last_Update, 'Deaths',Deaths) from coronavirus.data_usa2 where Province_State = '" + state + "' order by Province_State;"
+    # sql = "select json_object('Last_Update', Last_Update, 'Deaths',Deaths) from coronavirus.data_usa2 where Province_State = '" + state + "' order by Province_State;"
+    s = "select json_object('Last_Update', a.Last_Update, 'Deaths',(b.Deaths - a.Deaths)) "
+    s = s + "FROM coronavirus.data_usa2 a "
+    s = s + "join coronavirus.data_usa2 b on "
+    s = s + "date(b.Last_Update) > date(a.Last_Update) and "
+    s = s + "date(b.Last_Update) <= date(a.Last_Update) + 1 and "
+    s = s + "b.Province_State = a.Province_State "
+    s = s + "where a.Province_State = '" + state + "'"
+    s = s + "order by a.Last_Update "
+
     #sql = "SELECT Last_Update,Deaths FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
     # print(sql)
-    cmd = r'"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -udatareader -pdatareader -e "' + sql
+    cmd = r'"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -udatareader -pdatareader -e "' + s
     lst2 = os.popen(cmd).readlines()
     # print(lst2[0:10])
     statefile = statedeathsfolder + '\\' + state + '.json'
@@ -80,10 +99,24 @@ for x in lst_states:
     state = x.rstrip('\n')
     # sql = "SELECT 'Last_Update,'Deaths';"
     # sql = sql + "UNION ALL "
-    sql = "SELECT CONCAT_WS(',',Last_Update,Deaths) "
-    sql = sql + "FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
-    print(sql)
-    cmd = r'"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -udatareader -pdatareader  -e "' + sql
+
+
+    # sql = "SELECT CONCAT_WS(',',Last_Update,Deaths) "
+    # sql = sql + "FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
+
+    # s = " SELECT a.Last_Update ,b.Deaths - a.Deaths as Deaths "
+    s = " SELECT CONCAT_WS(',' ,a.Last_Update ,(b.Deaths - a.Deaths)) "
+    s = s + "  FROM coronavirus.data_usa2 a "
+    s = s + " join coronavirus.data_usa2 b on "
+    s = s + " date(b.Last_Update) > date(a.Last_Update) and "
+    s = s + " date(b.Last_Update) <= date(a.Last_Update) + 1 and "
+    s = s + " b.Province_State = a.Province_State "
+    s = s + " where a.Province_State = '" + state + "'"
+    s = s + " order by 1"
+
+
+    print(s)
+    cmd = r'"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -udatareader -pdatareader  -e "' + s
     lst3 = os.popen(cmd).readlines()
     # print(lst2[0:10])
     statefile = statedeathsfolder + '\\' + state + '.csv'
