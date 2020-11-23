@@ -52,6 +52,7 @@ for x in lst_states:
     s = s + " date(b.Last_Update) <= date(a.Last_Update) + 1 and "
     s = s + " b.Province_State = a.Province_State "
     s = s + " where a.Province_State = '" + state + "'"
+    s = s + " and b.Deaths - a.Deaths >= 0 "
     s = s + " order by 1"
 
     # sql = "SELECT Last_Update,Deaths FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
@@ -73,14 +74,15 @@ for x in lst_states:
     state = x.rstrip('\n')
     # print(state)
     # sql = "select json_object('Last_Update', Last_Update, 'Deaths',Deaths) from coronavirus.data_usa2 where Province_State = '" + state + "' order by Province_State;"
-    s = "select json_object('Last_Update', a.Last_Update, 'Deaths',(b.Deaths - a.Deaths)) "
-    s = s + "FROM coronavirus.data_usa2 a "
-    s = s + "join coronavirus.data_usa2 b on "
-    s = s + "date(b.Last_Update) > date(a.Last_Update) and "
-    s = s + "date(b.Last_Update) <= date(a.Last_Update) + 1 and "
-    s = s + "b.Province_State = a.Province_State "
-    s = s + "where a.Province_State = '" + state + "'"
-    s = s + "order by a.Last_Update "
+    s = " select json_object('Last_Update', a.Last_Update, 'Deaths',(b.Deaths - a.Deaths)) "
+    s = s + " FROM coronavirus.data_usa2 a "
+    s = s + " join coronavirus.data_usa2 b on "
+    s = s + " date(b.Last_Update) > date(a.Last_Update) and "
+    s = s + " date(b.Last_Update) <= date(a.Last_Update) + 1 and "
+    s = s + " b.Province_State = a.Province_State "
+    s = s + " where a.Province_State = '" + state + "'"
+    s = s + " and b.Deaths - a.Deaths >= 0 "
+    s = s + " order by a.Last_Update "
 
     #sql = "SELECT Last_Update,Deaths FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
     # print(sql)
@@ -97,14 +99,7 @@ for x in lst_states:
 #csv output----------------------------------------------------------------
 for x in lst_states:
     state = x.rstrip('\n')
-    # sql = "SELECT 'Last_Update,'Deaths';"
-    # sql = sql + "UNION ALL "
 
-
-    # sql = "SELECT CONCAT_WS(',',Last_Update,Deaths) "
-    # sql = sql + "FROM coronavirus.data_usa2 where Province_State = '" + state + "' order by Last_Update;"
-
-    # s = " SELECT a.Last_Update ,b.Deaths - a.Deaths as Deaths "
     s = " SELECT CONCAT_WS(',' ,a.Last_Update ,(b.Deaths - a.Deaths)) "
     s = s + "  FROM coronavirus.data_usa2 a "
     s = s + " join coronavirus.data_usa2 b on "
@@ -112,6 +107,7 @@ for x in lst_states:
     s = s + " date(b.Last_Update) <= date(a.Last_Update) + 1 and "
     s = s + " b.Province_State = a.Province_State "
     s = s + " where a.Province_State = '" + state + "'"
+    s = s + " and b.Deaths - a.Deaths >= 0 "
     s = s + " order by 1"
 
 
