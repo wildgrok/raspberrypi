@@ -8,26 +8,35 @@ import pandas as pd
 # import matplotlib
 import matplotlib.pyplot as plt
 #pd.options.plotting.backend
+import pandas as pd
+import numpy as np
+# import matplotlib
+import matplotlib.pyplot as plt
 import os
 
-# df = pd.DataFrame({
-#     'sales': [3, 2, 3, 9, 10, 6],
-#     'signups': [5, 5, 6, 12, 14, 13],
-#     'visits': [20, 42, 28, 62, 81, 50],
-# }, index=pd.date_range(start='2018/01/01', end='2018/07/01',
-#                        freq='M'))
-# ax = df.plot.area()
-# ax.plot()
-# df.plot()
-# # plt.show()
-# plt.savefig("c://DOWNLOADS/plot.jpg")
-# # print(ax)
-# # matplotlib.validate_backend
+#globals-------------------------------------------------
+statedeathsfolder = r'C:\Users\python\PycharmProjects\coronavirus\state_deaths'
+#--------------------------------------------------------
+
+def get_state_chart(state):
+    statecsvfile = statedeathsfolder + '\\' + state + '.csv'
+    df = pd.read_csv(statecsvfile, encoding = 'latin1', thousands=',')
+    df = df.set_index('Last_Update')
+    df = df[np.abs(df.Deaths-df.Deaths.mean()) <= (3*df.Deaths.std())]
+    # keep only the ones that are within +3 to -3 standard deviations in the column 'Deaths'.
+    ax = df.plot.area()
+    ax.plot()
+    df.plot()
+    statejpgfile = statedeathsfolder + '\\' + state + '.jpg'
+    plt.savefig(statejpgfile)
+
+
+
 
 
 #list of csv files
 #csvfolder = r'C:\Users\python\PycharmProjects\coronavirus\csv2'
-statedeathsfolder = r'C:\Users\python\PycharmProjects\coronavirus\state_deaths'
+
 
 
 
@@ -120,3 +129,16 @@ for x in lst_states:
         f.writelines('Last_Update,Deaths\n')
         f.writelines(lst3[1:])
 #------------------------------------------------------------------------
+
+#11/23/2020 jpg files---------------------------------------------------
+for x in lst_states[1:]: #skipping Province_State line
+    state = x.rstrip('\n')
+    print('getting pic for ' + state)
+    get_state_chart(state)
+
+#-----------------------------------------------------------------------
+
+
+
+
+

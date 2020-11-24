@@ -23,5 +23,8 @@ cd /public_html
 cd coronavirus
 cd statedeaths
 put *.txt
+put *.json
+put *.csv
+put *.jpg
 
 exit

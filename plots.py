@@ -1,28 +1,26 @@
 __author__ = 'python'
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.area.html
+# https://stackoverflow.com/questions/23199796/detect-and-exclude-outliers-in-pandas-data-frame
 
 
 import pandas as pd
+import numpy as np
 # import matplotlib
 import matplotlib.pyplot as plt
+
+folder = 'C:\\Users\\python\\PycharmProjects\\coronavirus\\state_deaths\\'
 #pd.options.plotting.backend
+def get_state_chart(state):
+    df = pd.read_csv((folder + state + '.csv'), encoding = 'latin1', thousands=',')
+    df = df.set_index('Last_Update')
+    df = df[np.abs(df.Deaths-df.Deaths.mean()) <= (3*df.Deaths.std())]
+    # keep only the ones that are within +3 to -3 standard deviations in the column 'Deaths'.
 
-df = pd.read_csv((r'C:\Users\python\PycharmProjects\coronavirus\state_deaths\Florida.csv'), encoding = 'latin1', thousands=',')
-#df = pd.read_csv((r'C:\downloads\Florida2.csv'), encoding = 'latin1', thousands=',')
+    ax = df.plot.area()
+    ax.plot()
+    df.plot()
+    plt.savefig(folder  + state + '.jpg')
 
-# df = pd.DataFrame({
-#     'sales': [3, 2, 3, 9, 10, 6],
-#     'signups': [5, 5, 6, 12, 14, 13],
-#     'visits': [20, 42, 28, 62, 81, 50],
-# }, index=pd.date_range(start='2018/01/01', end='2018/07/01',
-#                       freq='M'))
-df = df.set_index('Last_Update')
-
-
-ax = df.plot.area()
-ax.plot()
-df.plot()
-# plt.show()
-plt.savefig("c://DOWNLOADS/plot.jpg")
-# print(ax)
-# matplotlib.validate_backend
+if __name__ == '__main__':
+    # C:\Users\python\PycharmProjects\coronavirus\state_deaths
+    get_state_chart('Florida')
