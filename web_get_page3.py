@@ -169,29 +169,20 @@ def get_data():
         writelog(col)
     total = df_previous_day['New_Deaths'].sum()
     print(total)
-    # states = sorted(picsfolder + df_previous_day.index + '.jpg')
+
+    # Create a list named states to store all the image paths
     states = picsfolder + df_previous_day.index + '.jpg'
-    # print(states)
-    # Create a list named country to store all the image paths
-    # country = ['https://www.countries-ofthe-world.com/flags-normal/flag-of-United-States-of-America.png','https://www.countries-ofthe-world.com/flags-normal/flag-of-Brazil.png','https://www.countries-ofthe-world.com/flags-normal/flag-of-Russia.png','https://www.countries-ofthe-world.com/flags-normal/flag-of-India.png','https://www.countries-ofthe-world.com/flags-normal/flag-of-Peru.png']
-    # # Assigning the new list as a new column of the dataframe
-    # df['Country'] = country
-    df_previous_day['States'] = states
-
-
-
-    # df_previous_day.to_html('webpage.html',escape=False, formatters=dict(States=path_to_image_html))
-
+    df_previous_day['Chart'] = states
 
     # Rendering the dataframe as HTML table
-    df_previous_day.to_html(escape=False, formatters=dict(States=path_to_image_html))
+    df_previous_day.to_html(escape=False, formatters=dict(Chart=path_to_image_html))
     # Rendering the images in the dataframe using the HTML method.
     # HTML(df_previous_day.to_html(escape=False,formatters=dict(States=path_to_image_html)))
 
     webpage = webfolder + 'index3.html'
 
     # Saving the dataframe as a webpage
-    df_previous_day.to_html(webpage,escape=False, formatters=dict(States=path_to_image_html))
+    df_previous_day.to_html(webpage,escape=False, formatters=dict(Chart=path_to_image_html))
 
 
 
