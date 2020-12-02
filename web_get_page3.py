@@ -24,7 +24,7 @@ webfolder = ''
 workfolder = ''
 # picsfolder = 'C:/Users/python/PycharmProjects/coronavirus//'
 # picsfolder = 'C:\\Users\\python\\PycharmProjects\\coronavirus\\state_deaths\\'
-picsfolder = 'coronavirus/state_deaths/'
+picsfolder = 'state_deaths/'
 
 csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
@@ -75,10 +75,10 @@ def make_html(table, total):
     s = s + '<b> Total new deaths for today: ' + str(total) + '</b>'
     s = s + '<p>'
     s = s  + '<a href="references2.html">Misc links</a><p>'
-    s = s  + '<a href="index_old.html">Link to original site</a><p>'
+    # s = s  + '<a href="index_old.html">Link to original site</a><p>'
     s = s + '</body>'
     s = s + '</html>'
-    webpage = webfolder + 'index3.html'
+    webpage = webfolder + 'index.html'
     with open(webpage, 'wt') as f:
         f.write(s)
 
@@ -175,46 +175,19 @@ def get_data():
     df_previous_day['Chart'] = states
 
     # Rendering the dataframe as HTML table
-    df_previous_day.to_html(escape=False, formatters=dict(Chart=path_to_image_html))
+    # df_previous_day.to_html(escape=False, formatters=dict(Chart=path_to_image_html))
     # Rendering the images in the dataframe using the HTML method.
     # HTML(df_previous_day.to_html(escape=False,formatters=dict(States=path_to_image_html)))
 
     webpage = webfolder + 'index3.html'
 
     # Saving the dataframe as a webpage
-    df_previous_day.to_html(webpage,escape=False, formatters=dict(Chart=path_to_image_html))
-
-
-
-
-
-
-
-
-
-
-
+    # df_previous_day.to_html(webpage,escape=False, formatters=dict(Chart=path_to_image_html))
+    html = df_previous_day.to_html(escape=False, formatters=dict(Chart=path_to_image_html))
 
     # html = df_previous_day.to_html(na_rep='')
-    # make_html(html, total)
+    make_html(html, total)
 
-    #11/24/2020 working on this
-    #img src="'+ path + '" width="60" >
-    #df_previous_day['Chart'] = '<img src=C:\\Users\\python\\PycharmProjects\\coronavirus\\state_deaths\\' + df_previous_day.index + '.jpg width 60>'
-    # df_previous_day['pics'] = picsfolder +  df_previous_day.index + '.jpg'
-    # country = df_previous_day['Chart']
-    # print(country)
-    # df.to_html(escape=False, formatters=dict(Country=path_to_image_html))
-    #html = df_previous_day.to_html(escape=False, formatters=dict(Country=path_to_image_html))
-    # html = HTML(df_previous_day.to_html(escape=False,formatters=dict(Country=path_to_image_html)))
-    # print(html)
-    #
-    # html = df_previous_day.to_html(webpage,escape=False, formatters=dict(pics=path_to_image_html))
-    # webpage = webfolder + 'index3.html'
-    # with open(webpage, 'wt') as f:
-    #      f.write(f)
-    # Saving the dataframe as a webpage
-    # df_previous_day.to_html(webpage,escape=False, formatters=dict(Country=path_to_image_html))
 
 # Run program 
 if __name__ == '__main__':
