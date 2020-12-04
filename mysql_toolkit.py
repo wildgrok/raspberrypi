@@ -1,6 +1,7 @@
 __author__ = 'python'
 #version in desktop
 #last modified
+#12/4/2020 fixed folder to /csv2, was /csv
 # 7/6/2020 works with short table data_usa2
 # 6/17/2020
 
@@ -10,7 +11,7 @@ import os
 
 #filecsv = 'C:/Users/python/PycharmProjects/04-25-2020.csv'
 #filecsv = open('04-26-2020.csv')
-csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv/'
+csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
 
 #mydb = MySQLdb.connect(host='localhost',
 mydb = MySQLdb.connect(host='localhost', user='root', passwd='Camello2183', db='coronavirus')
@@ -55,13 +56,7 @@ def load_csv_file(csvfile):
 
 
     cnt = 0
-    # `Province_State` varchar(100) NOT NULL,
-    # `Country_Region` varchar(100) NOT NULL,
-    # `Last_Update` varchar(100) NOT NULL,
-    # `Deaths` varchar(100) DEFAULT NULL,
-    #truncate table before
-    # s = 'truncate table data_usa2;'
-    # cursor.execute(s)
+
     for row in csv_data:
         #            Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,FIPS,Incident_Rate,People_Tested,People_Hospitalized,Mortality_Rate,UID,ISO3,Testing_Rate,Hospitalization_Rate
         #FIPS,Admin2,Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,Combined_Key,Incidence_Rate,Case-Fatality_Ratio
@@ -86,28 +81,15 @@ def load_csv_file(csvfile):
             s = 'INSERT IGNORE INTO data_usa2(Province_State,Country_Region,Last_Update,Deaths) '
             #s = s + 'VALUES("%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s") '
             #s = s + 'VALUES (' + chr(39) + row[pos_Province_State] + chr(39) + ',' + chr(39) + row[pos_Country_Region] + chr(39) + ',' + chr(39) + row[pos_Last_Update] + chr(39) + ',' + chr(39) + row[pos_Deaths] + chr(39) + '); '
-            s = s + 'VALUES (' + chr(39) + Province_State + chr(39) + ',' + chr(39) + Country_Region + chr(39) + ',' + chr(39) + Last_Update + chr(39) + ',' + chr(39) + Deaths + chr(39) + '); '
-
+            s = s + ' VALUES (' + chr(39) + Province_State + chr(39) + ',' + chr(39) + Country_Region + chr(39) + ',' + chr(39) + Last_Update + chr(39) + ',' + chr(39) + Deaths + chr(39) + '); '
             #s = s + 'VALUES("%s", "%s", "%s","%s") '
-            #print(s)
-            # print(row)
+            print(s)
             cursor.execute(s)
-
-            # s = 'INSERT IGNORE INTO data_usa(Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,FIPS,Incident_Rate,People_Tested,People_Hospitalized,Mortality_Rate,UID,ISO3,Testing_Rate,Hospitalization_Rate) '
-            # # # s = s + 'VALUES("%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s") '
-            # s = s + 'VALUES (%s, %s, %s, %s, %s, %s,%s, %s, %s,%s, %s, %s, %s, %s, %s,%s, %s, %s) '
-            # cursor.execute(s, row)
-
-        # try:
-        #     cursor.execute(s, row)
-        # #except TypeError:
-        # finally:
-        #     pass
         cnt = cnt + 1
     #close the connection to the database.
     mydb.commit()
     cursor.close()
-    # print("Processed " + str(cnt) + ' records from ' + csvfile)
+    print("Processed " + str(cnt) + ' records from ' + csvfile)
 
 def load_all_csv_files(csvfolder):
     #list of all files in csv files
@@ -117,11 +99,6 @@ def load_all_csv_files(csvfolder):
             csvfile = csvfolder + x
             load_csv_file(csvfile)
             print('Processed ' + csvfile)
-
-
-
-
-
 
 #===========================================================================
 
