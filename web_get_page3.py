@@ -26,7 +26,7 @@ workfolder = ''
 # picsfolder = 'C:\\Users\\python\\PycharmProjects\\coronavirus\\state_deaths\\'
 picsfolder = 'state_deaths/'
 #FOR TESTING LOCALLY, LEAVE IT COMMENTED
-picsfolder = 'coronavirus/state_deaths/'
+#picsfolder = 'coronavirus/state_deaths/'
 
 csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
@@ -67,20 +67,33 @@ def make_html_TEMP(table, total):
     with open(webpage, 'wt') as f:
         f.write(s)
 
-def make_html(table, total):
+def make_html(webpage,table, total):
     today = str(datetime.date.today())
     s = '<html>'
     s = s + '<body>'
     s = '<h1>Coronavirus USA Data - updated daily</h1>'
-    s = s + '<br><b>Date run: ' + today + '</b><br>'
+    s = s + '<br><b>Date run: ' + today + ' - Total new deaths for today: ' + str(total) + '</b><br>'
+
+    if webpage == webfolder + 'index.html':
+        s = s + 'Sorted by New_Deaths<br>'
+    if webpage == webfolder + 'index2.html':
+        s = s + 'Sorted by Deaths_As_%_of Population_2018<br>'
+
     s = s + table
-    s = s + '<b> Total new deaths for today: ' + str(total) + '</b>'
+
+    # s = s + '<b> Total new deaths for today: ' + str(total) + '</b>'
     s = s + '<p>'
+
+    if webpage == webfolder + 'index.html':
+        s = s  + '<a href="index2.html">Sorted by Deaths_As_%_of Population_2018</a><p>'
+    if webpage == webfolder + 'index2.html':
+        s = s  + '<a href="index.html">Sorted by New_Deaths</a><p>'
+
     s = s  + '<a href="references2.html">Misc links</a><p>'
     # s = s  + '<a href="index_old.html">Link to original site</a><p>'
     s = s + '</body>'
     s = s + '</html>'
-    webpage = webfolder + 'index.html'
+    # webpage = webfolder + 'index.html'
     with open(webpage, 'wt') as f:
         f.write(s)
 
@@ -174,22 +187,29 @@ def get_data():
 
     # Create a list named states to store all the image paths
     states = picsfolder + df_previous_day.index + '.jpg'
-    df_previous_day['Chart'] = states
+    df_previous_day['Chart_New_Deaths'] = states
     writelog('state pics:')
     for x in states:
         writelog(x)
 
+    # DO NOT ENABLE THIS, we miss states like New York
     # keep only the ones that are within +3 to -3 standard deviations in the column 'Deaths'.
     #df_previous_day = df_previous_day[np.abs(df_previous_day.Deaths-df_previous_day.Deaths.mean()) <= (3*df_previous_day.Deaths.std())]
 
 
 
-    # Saving the dataframe as a webpage
+    # Saving the dataframe as a webpage na_rep to prevent Nan in page for no values or null
     # df_previous_day.to_html(webpage,escape=False, formatters=dict(Chart=path_to_image_html))
-    html = df_previous_day.to_html(escape=False, na_rep='', formatters=dict(Chart=path_to_image_html))
+    html = df_previous_day.to_html(na_rep='', escape=False,  formatters=dict(Chart_New_Deaths=path_to_image_html))
 
-    # html = df_previous_day.to_html(na_rep='')
-    make_html(html, total)
+    webpage = webfolder + 'index.html'
+    make_html(webpage, html, total)
+
+    #sorted by Deaths_As_%_of Population_2018
+    df_previous_day = df_previous_day.sort_values(by=['Deaths_As_%_of Population_2018'])
+    html = df_previous_day.to_html(na_rep='', escape=False,  formatters=dict(Chart_New_Deaths=path_to_image_html))
+    webpage = webfolder + 'index2.html'
+    make_html(webpage, html, total)
 
 
 # Run program 
