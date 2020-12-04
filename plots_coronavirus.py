@@ -1,16 +1,13 @@
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.area.html
 # created from plots.py 11/14/2020
 # last update:
+#12/3/2020 fix to remove axis to image
 #11/21/2020: created json files
 #11/21/2020: created state deaths files
 
-import pandas as pd
-# import matplotlib
-import matplotlib.pyplot as plt
-#pd.options.plotting.backend
+
 import pandas as pd
 import numpy as np
-# import matplotlib
 import matplotlib.pyplot as plt
 import os
 
@@ -25,8 +22,12 @@ def get_state_chart(state):
     df = df[np.abs(df.Deaths-df.Deaths.mean()) <= (3*df.Deaths.std())]
     # keep only the ones that are within +3 to -3 standard deviations in the column 'Deaths'.
     ax = df.plot.area()
-    ax.plot()
-    df.plot()
+
+    #12/3/2020
+    ax.set_axis_off()
+    # ax.plot()
+    # df.plot()
+
     statejpgfile = statedeathsfolder + '\\' + state + '.jpg'
     plt.savefig(statejpgfile)
 

@@ -1,10 +1,10 @@
 #!/usr/bin/python3.7
-#desktop version
-#web_get_page2.py
+#web_get_page3.py
 #version in desktop
-#from web_get_page.py as of 8/13/2020
+#from web_get_page2.py
 #last modified
-#11/24/2020 workimg adding display of jpg, not ready yet
+#12/2/2020 completed fixes for images
+#11/24/2020 working adding display of jpg, not ready yet
 #11/11/2020 fixing error see file errors_11_11_2020.txt
 #KeyError: "['People_Tested' 'Mortality_Rate'] not found in axis" in line 131
 
@@ -17,7 +17,7 @@ import numpy as np
 import datetime
 import io
 import matplotlib.pyplot as plt
-from IPython.core.display import HTML
+# from IPython.core.display import HTML
 
 # workfolder = 'C:\Users\python\PycharmProjects\'
 webfolder = ''
@@ -25,6 +25,8 @@ workfolder = ''
 # picsfolder = 'C:/Users/python/PycharmProjects/coronavirus//'
 # picsfolder = 'C:\\Users\\python\\PycharmProjects\\coronavirus\\state_deaths\\'
 picsfolder = 'state_deaths/'
+#FOR TESTING LOCALLY, LEAVE IT COMMENTED
+#picsfolder = 'coronavirus/state_deaths/'
 
 csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
@@ -174,12 +176,11 @@ def get_data():
     states = picsfolder + df_previous_day.index + '.jpg'
     df_previous_day['Chart'] = states
 
-    # Rendering the dataframe as HTML table
-    # df_previous_day.to_html(escape=False, formatters=dict(Chart=path_to_image_html))
-    # Rendering the images in the dataframe using the HTML method.
-    # HTML(df_previous_day.to_html(escape=False,formatters=dict(States=path_to_image_html)))
 
-    webpage = webfolder + 'index3.html'
+    # keep only the ones that are within +3 to -3 standard deviations in the column 'Deaths'.
+    df_previous_day = df_previous_day[np.abs(df_previous_day.Deaths-df_previous_day.Deaths.mean()) <= (3*df_previous_day.Deaths.std())]
+
+
 
     # Saving the dataframe as a webpage
     # df_previous_day.to_html(webpage,escape=False, formatters=dict(Chart=path_to_image_html))
