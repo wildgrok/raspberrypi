@@ -26,7 +26,7 @@ workfolder = ''
 # picsfolder = 'C:\\Users\\python\\PycharmProjects\\coronavirus\\state_deaths\\'
 picsfolder = 'state_deaths/'
 #FOR TESTING LOCALLY, LEAVE IT COMMENTED
-#picsfolder = 'coronavirus/state_deaths/'
+picsfolder = 'coronavirus/state_deaths/'
 
 csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
@@ -170,21 +170,23 @@ def get_data():
     for col in df_previous_day.columns:
         writelog(col)
     total = df_previous_day['New_Deaths'].sum()
-    print(total)
+    writelog(str(total))
 
     # Create a list named states to store all the image paths
     states = picsfolder + df_previous_day.index + '.jpg'
     df_previous_day['Chart'] = states
-
+    writelog('state pics:')
+    for x in states:
+        writelog(x)
 
     # keep only the ones that are within +3 to -3 standard deviations in the column 'Deaths'.
-    df_previous_day = df_previous_day[np.abs(df_previous_day.Deaths-df_previous_day.Deaths.mean()) <= (3*df_previous_day.Deaths.std())]
+    #df_previous_day = df_previous_day[np.abs(df_previous_day.Deaths-df_previous_day.Deaths.mean()) <= (3*df_previous_day.Deaths.std())]
 
 
 
     # Saving the dataframe as a webpage
     # df_previous_day.to_html(webpage,escape=False, formatters=dict(Chart=path_to_image_html))
-    html = df_previous_day.to_html(escape=False, formatters=dict(Chart=path_to_image_html))
+    html = df_previous_day.to_html(escape=False, na_rep='', formatters=dict(Chart=path_to_image_html))
 
     # html = df_previous_day.to_html(na_rep='')
     make_html(html, total)
