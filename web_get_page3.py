@@ -3,6 +3,7 @@
 #version in desktop
 #from web_get_page2.py
 #last modified
+#12/29/2020 read_csv uses usecols
 #12/2/2020 completed fixes for images
 #11/24/2020 working adding display of jpg, not ready yet
 #11/11/2020 fixing error see file errors_11_11_2020.txt
@@ -125,10 +126,12 @@ def get_data():
 
 
     #----------------------------------adding car deaths 2018, needed for population 2018------------------------------
-    carsdf = pd.read_csv((workfolder + 'car_accident_deaths_usa_2018.csv'), encoding = 'latin1', thousands=',')
+    # Province_State,Population_2018,Vehicle miles traveled (millions),Fatal crashes,Deaths_Car_2018,"Deaths per 100,000 population",Deaths per 100 million vehicle miles traveled
+    # added usecols 12/29/2020
+    carsdf = pd.read_csv((workfolder + 'car_accident_deaths_usa_2018.csv'), encoding = 'latin1', thousands=',', usecols = ['Province_State','Population_2018'])
     #8/13/2020 only need population and car deaths
     carsdf = carsdf.set_index('Province_State')
-    carsdf = carsdf.drop(['Vehicle miles traveled (millions)','Fatal crashes', "Deaths per 100,000 population", 'Deaths per 100 million vehicle miles traveled'], axis=1)
+    # carsdf = carsdf.drop(['Vehicle miles traveled (millions)','Fatal crashes', "Deaths per 100,000 population", 'Deaths per 100 million vehicle miles traveled'], axis=1)
     carsdf = carsdf[['Population_2018']].apply(pd.to_numeric)
     writelog('these are the columns for car deaths 2018')
 
@@ -145,9 +148,10 @@ def get_data():
     #--------------------------------adding all deaths 2018-----------------------------------
     # Province_State,Births,Fertility_Rate,Deaths,Death_Rate
     # file: deaths_usa_2018.csv
-    deaths2018df = pd.read_csv((workfolder + 'deaths_usa_2018.csv'), encoding = 'latin1', thousands=',')
+    # added usecols 12/29/2020
+    deaths2018df = pd.read_csv((workfolder + 'deaths_usa_2018.csv'), encoding = 'latin1', thousands=',', usecols = ['Province_State','Deaths'])
     deaths2018df = deaths2018df.set_index('Province_State')
-    deaths2018df = deaths2018df.drop(['Births','Fertility_Rate','Death_Rate'], axis=1)
+    # deaths2018df = deaths2018df.drop(['Births','Fertility_Rate','Death_Rate'], axis=1)
     #Adding population 2018
     deaths2018df['Population_2018'] = carsdf['Population_2018']
     deaths2018df = deaths2018df.rename(columns={"Deaths": "Deaths_All_Causes"})
@@ -159,7 +163,11 @@ def get_data():
 
 
     country = ['US']
-    df1 = pd.read_csv((csvfolder + yesterdayfile), encoding = 'latin1')
+    # added usecols 12/29/2020
+    #Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,FIPS,Incident_Rate,Total_Test_Results,People_Hospitalized,Case_Fatality_Ratio,UID,ISO3,Testing_Rate,Hospitalization_Rate
+    #Province_State,Country_Region,Last_Update,Deaths
+
+    df1 = pd.read_csv((csvfolder + yesterdayfile), encoding = 'latin1', thousands=',', usecols = ['Province_State','Country_Region','Last_Update','Deaths'])
     df = df1[df1['Country_Region'].isin(country)]
     df = df.set_index('Province_State')
     writelog('these are the columns - current day')
@@ -167,13 +175,15 @@ def get_data():
         writelog(col)
     dayago = today - datetime.timedelta(days=2)
     dayagofile = get_csv_filename(dayago)
-    df_previous_day = pd.read_csv((csvfolder + dayagofile), encoding = 'latin1',thousands=',')
+    df_previous_day = pd.read_csv((csvfolder + dayagofile), encoding = 'latin1',thousands=',' ,usecols = ['Province_State','Country_Region','Last_Update','Deaths'])
     df_previous_day = df_previous_day.set_index('Province_State')
 
     #11/11/2020
     # df_previous_day = df_previous_day.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate', 'Mortality_Rate'], axis=1)
-    df_previous_day = df_previous_day.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',                        'People_Hospitalized',  'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate'                  ], axis=1)
-    df_previous_day = df_previous_day.drop(['Total_Test_Results',	'Case_Fatality_Ratio'], axis=1)
+    # df_previous_day = df_previous_day.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',                        'People_Hospitalized',  'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate'                  ], axis=1)
+    # df_previous_day = df_previous_day.drop(['Total_Test_Results',	'Case_Fatality_Ratio'], axis=1)
+    df_previous_day = df_previous_day.drop(['Country_Region'], axis=1)
+
 
 
     df_previous_day['Population_2018'] = carsdf['Population_2018']
