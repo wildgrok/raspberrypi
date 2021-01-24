@@ -175,7 +175,15 @@ def get_data():
         writelog(col)
     dayago = today - datetime.timedelta(days=2)
     dayagofile = get_csv_filename(dayago)
-    df_previous_day = pd.read_csv((csvfolder + dayagofile), encoding = 'latin1',thousands=',' ,usecols = ['Province_State','Country_Region','Last_Update','Deaths'])
+
+    #1/22/2020 need to add check for missing previous day
+    if os.path.exists(csvfolder + dayagofile):
+        df_previous_day = pd.read_csv((csvfolder + dayagofile), encoding = 'latin1',thousands=',' ,usecols = ['Province_State','Country_Region','Last_Update','Deaths'])
+    else:
+        df_previous_day = pd.read_csv((csvfolder + yesterdayfile), encoding = 'latin1',thousands=',' ,usecols = ['Province_State','Country_Region','Last_Update','Deaths'])
+
+
+
     df_previous_day = df_previous_day.set_index('Province_State')
 
     #11/11/2020
