@@ -1,8 +1,9 @@
 #!/usr/bin/python3.7
 #web_get_page3.py
-#version in desktop
+#version in dell desktop
 #from web_get_page2.py
 #last modified
+#6/21/2021 testing in dell laptop
 #12/29/2020 read_csv uses usecols
 #12/2/2020 completed fixes for images
 #11/24/2020 working adding display of jpg, not ready yet
@@ -29,7 +30,9 @@ picsfolder = 'state_deaths/'
 #FOR TESTING LOCALLY, LEAVE IT COMMENTED
 #picsfolder = 'coronavirus/state_deaths/'
 
-csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
+# csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
+csvfolder = 'C:/Users/admin/Documents/coronavirus/csv/'
+
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
 #11/24/2020
 def path_to_image_html(path):
@@ -79,6 +82,8 @@ def make_html(webpage,table, total):
         s = s + 'Sorted by New_Deaths<br>'
     if webpage == webfolder + 'index2.html':
         s = s + 'Sorted by Deaths_As_%_of Population_2018<br>'
+    #6/26/2021
+    s = s + 'Note: Florida not reporting new deaths anymore <br>'
 
     s = s + table
 
