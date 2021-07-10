@@ -21,7 +21,7 @@ database = r'C:\coronavirus\data_usa.csv'
 
 
 #create dataframe from dbfile
-pd.set_option('display.max_rows', 6)
+pd.set_option('display.max_rows', 20)
 
 
 
@@ -32,12 +32,12 @@ df1 = pd.read_csv(database, encoding = 'latin1', thousands=',')
 # print(df1)
 
 df1=df1.sort_values(by=['Province_State', 'Last_Update'])
-print(df1)
+# print(df1)
 list_columns = df1.columns
-print('List of columns')
+# print('List of columns')
 # # print (list_columns)
-for x in list_columns:
-     print(x)
+# for x in list_columns:
+    #  print(x)
 
 # df1 = df1.astype({'Deaths': 'int32','Last_Update':'datetime64[ns]'}).dtypes
 # df1 = df1.set_index('Province_State')
@@ -45,9 +45,9 @@ for x in list_columns:
 #list = df1['Province_State']
 # lst_states = df1.keys().unique().sort_values()
 lst_states = df1['Province_State'].unique()
-print(lst_states)
-print(lst_states[0])
-print(lst_states[-1])
+# print(lst_states)
+# print(lst_states[0])
+# print(lst_states[-1])
 # cls
 # print(df1)
 # df1 = df1.diff
@@ -59,9 +59,11 @@ print(lst_states[-1])
 # df = df.sort_values(by=['group_var', 'value'])
 
 # only take diffs where next row is of the same group
-# df1['diffs'] = np.where(df1.Province_State == df1.Province_State.shift(1), df1.value.diff(), 0)
+df1['diffs'] = np.where(df1.Province_State == df1.Province_State.shift(1), df1.Deaths.diff(), 0)
+print(df1)
 # df1 = df1.sort_values(['Province_State', 'Last_Update'], inplace=True)
-# df1.sort_values(by  = ['Province_State', 'Last_Update'])
+# df1.sort_values(by  = ['Province_State', 'Last_Update'])cls
+
 # df1['diffs'] = df1.groupby('Province_State')['Deaths'].diff()
 # In order to return to the original order, you can the use
 
