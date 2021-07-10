@@ -17,16 +17,13 @@ today = datetime.date.today()
 #filecsv = 'C:/Users/python/PycharmProjects/04-25-2020.csv'
 #filecsv = open('04-26-2020.csv')
 # csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
-csvfolder = 'C:/coronavirus/csv/'
-dbfile = 'C:/coronavirus/data_usa.csv'
+csvfolder = '/home/pi/Documents/'
+dbfile = '/home/pi/Documents/data_usa.csv'
 # dfdb = pd.read_csv(dbfile)
 # Last_UpdateDB = dfdb.column_name.Last_Update #you can also use df['column_name']
 
 # csvfolder = 'C:/Users/admin/Documents/coronavirus/csv/'
 
-#mydb = MySQLdb.connect(host='localhost',
-# mydb = MySQLdb.connect(host='localhost', user='root', passwd='Camello2183', db='coronavirus')
-#mydb = MySQLdb.connect(host='localhost', user='root', passwd='Dinosaur1?', db='coronavirus')
 
 #not used
 # def get_date_from_csv(csvfile):
@@ -38,55 +35,15 @@ dbfile = 'C:/coronavirus/data_usa.csv'
 #     b = a[0:10]             #yyyy-mm-dd only
 #     return b
 
-#not used
-# def get_list_of_dates():
-#     cursor = mydb.cursor()
-#     s = 'select distinct replace(left(Last_Update, 11),"' + chr(39) + '","' + '") as Last_Update from data_usa'
-#     #s = 'select distinct replace(left(Last_Update, 11),"' + chr(39) + '","' + '") as Last_Update from data_usa2'
-#     cursor.execute(s)
-#     return cursor.fetchall()
-# def get_list_of_dates(dbfile):
-
-
-
-# def get_col_position(colnames, col):
-#     cnt = 0
-#     for x in colnames:
-#         if x == col:
-#             return cnt
-#         cnt = cnt + 1
 
 #exports to text file database contents of current csv file
 def load_csv_file(csvfile):
     filecsv = open(csvfile)
-    # cursor = mydb.cursor()
     csv_data = csv.reader(filecsv, delimiter=',', quotechar='"')
-    # import pandas as pd
-    # df = pd.read_csv(csvfile)
-    # Last_Update = df.column_name.Last_Update #you can also use df['column_name']
-
-
-
-    # reader = csv.DictReader(filecsv, delimiter=',')
-    # colnames = reader.fieldnames
-    # dates = reader.fieldnames.index(2)
-    # print(dates)
-    # print(colnames)
-    # pos_Province_State =  get_col_position(colnames, 'Province_State')
-    # pos_Country_Region =  get_col_position(colnames, 'Country_Region')
-    # pos_Last_Update    =  get_col_position(colnames, 'Last_Update')
-    # pos_Deaths         =  get_col_position(colnames, 'Deaths')
-
-
-
+    
     cnt = 0
 
     for row in csv_data:
-        #            Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,FIPS,Incident_Rate,People_Tested,People_Hospitalized,Mortality_Rate,UID,ISO3,Testing_Rate,Hospitalization_Rate
-        #FIPS,Admin2,Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,Combined_Key,Incidence_Rate,Case-Fatality_Ratio
-        # s = 'INSERT IGNORE INTO data_usa(Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,FIPS,Incident_Rate,People_Tested,People_Hospitalized,Mortality_Rate,UID,ISO3,Testing_Rate,Hospitalization_Rate) '
-        # # # s = s + 'VALUES("%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s") '
-        # s = s + 'VALUES (%s, %s, %s, %s, %s, %s,%s, %s, %s,%s, %s, %s, %s, %s, %s,%s, %s, %s) '
 
         if str(row[0]) + str(row[1]) == '':
             Province_State = str(row[2])
@@ -101,14 +58,7 @@ def load_csv_file(csvfile):
 
 
         if Country_Region == 'US':
-        #if row[pos_Country_Region] == 'US':
-            # s = 'INSERT IGNORE INTO data_usa2(Province_State,Country_Region,Last_Update,Deaths) '
-            #s = s + 'VALUES("%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s","%s", "%s", "%s") '
-            #s = s + 'VALUES (' + chr(39) + row[pos_Province_State] + chr(39) + ',' + chr(39) + row[pos_Country_Region] + chr(39) + ',' + chr(39) + row[pos_Last_Update] + chr(39) + ',' + chr(39) + row[pos_Deaths] + chr(39) + '); '
-            # s = s + ' VALUES (' + chr(39) + Province_State + chr(39) + ',' + chr(39) + Country_Region + chr(39) + ',' + chr(39) + Last_Update + chr(39) + ',' + chr(39) + Deaths + chr(39) + '); '
-            #s = s + 'VALUES("%s", "%s", "%s","%s") '
             s = Province_State + ',' + Country_Region + ',' + Last_Update + ',' + Deaths
-            # print(s)
             
             if (Last_Update[:10]) == str(today):
                 with open(dbfile, 'a') as f:
@@ -116,12 +66,7 @@ def load_csv_file(csvfile):
                 print('Added ' + s)
                 cnt = cnt + 1
 
-            # cursor.execute(s)
-        # cnt = cnt + 1
-    #close the connection to the database.
-    # mydb.commit()
-    # cursor.close()
-    # f.close()
+     
     print("Processed " + str(cnt) + ' records from ' + csvfile)
 
 def load_all_csv_files(csvfolder):
@@ -135,19 +80,5 @@ def load_all_csv_files(csvfolder):
 
 #===========================================================================
 
-#file = '04-27-2020.csv'
-# m = get_date_from_csv(file)
-# print(m)
-#load_csv_file(file)
-#lst = get_list_of_dates()
-# for x in lst:
-#     print(x)
-# print('-----')
-#
-# print(lst[0][0])
-# print(lst[1][0])
-# print(lst[2][0])
-# print(lst[-1][0])
-# files = os.listdir(csvfolder)
-# print(files)
+
 load_all_csv_files(csvfolder)

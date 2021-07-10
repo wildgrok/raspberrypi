@@ -1,6 +1,5 @@
-#!/usr/bin/python3.7
 #web_get_page3.py
-#version in dell desktop
+#version in rpi4gb
 #from web_get_page2.py
 #last modified
 #6/21/2021 testing in dell laptop
@@ -22,16 +21,16 @@ import matplotlib.pyplot as plt
 # from IPython.core.display import HTML
 
 # workfolder = 'C:\Users\python\PycharmProjects\'
-webfolder = ''
-workfolder = ''
+webfolder = '/home/pi/Documents/'
+workfolder = '/home/pi/Documents/'
 # picsfolder = 'C:/Users/python/PycharmProjects/coronavirus//'
 # picsfolder = 'C:\\Users\\python\\PycharmProjects\\coronavirus\\state_deaths\\'
-picsfolder = 'state_deaths/'
+picsfolder = '/home/pi/Documents/state_deaths/'
 #FOR TESTING LOCALLY, LEAVE IT COMMENTED
 #picsfolder = 'coronavirus/state_deaths/'
 
 # csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
-csvfolder = 'C:/Users/admin/Documents/coronavirus/csv/'
+csvfolder = '/home/pi/Documents/'
 
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
 #11/24/2020
@@ -51,6 +50,8 @@ def get_csv_filename(datestr):
     if len(day) < 2:
         day = '0' + day
     file = month + '-' + day + '-' + year + '.csv'
+    #to get missing date
+    #file = '07' + '-' + '06' + '-' + '2021' + '.csv'
     return file
 
 def make_html_TEMP(table, total):
