@@ -14,6 +14,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+from pandas._libs import indexing
+from pandas.core.indexes.base import Index
+
 #globals-------------------------------------------------
 statedeathsfolder = r'C:\coronavirus\state_deaths'
 # statedeathsfolder = r'C:\Users\admin\Documents\coronavirus\state_deaths'
@@ -61,6 +64,7 @@ lst_states = df1['Province_State'].unique()
 # only take diffs where next row is of the same group
 df1['diffs'] = np.where(df1.Province_State == df1.Province_State.shift(1), df1.Deaths.diff(), 0)
 print(df1)
+df1.to_csv('c:/coronavirus/dataframe.csv', index=False)
 # df1 = df1.sort_values(['Province_State', 'Last_Update'], inplace=True)
 # df1.sort_values(by  = ['Province_State', 'Last_Update'])cls
 
