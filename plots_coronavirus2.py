@@ -43,6 +43,8 @@ def get_state_data(state):
     df = df.drop(['Deaths','Province_State', 'Country_Region'], axis=1)
     df = df.rename(columns={"diffs": "Deaths"})
     df = df.set_index('Last_Update')
+    #to prevent negative deaths in the charts
+    df['Deaths'] = np.where(df['Deaths'] <0, None, df['Deaths'])
     # keep only the ones that are within +3 to -3 standard deviations in the column 'Deaths'.
     # df = df[np.abs(df.Deaths-df.Deaths.mean()) <= (3*df.Deaths.std())]
 
