@@ -3,9 +3,9 @@
 HOST=besada.com
 USER=jbesada
 PASSWORD=Camello2183
-LOCALPATH=/home/pi/Documents/
-FILE=*.csv
-REMOTEPATH=/public_html
+LOCALPATH=/var/www/html/coronavirus/state_deaths
+FILE=*.*
+REMOTEPATH=/public_html/coronavirus/state_deaths/
 
 
 ftp -n -v $HOST <<EOT
@@ -17,5 +17,12 @@ lcd $LOCALPATH
 cd $REMOTEPATH
 
 mput $FILE
+
+lcd /var/www/html/coronavirus
+cd /public_html/coronavirus/
+mput *.html
+
+
+
 bye
 EOT

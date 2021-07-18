@@ -21,13 +21,14 @@ import matplotlib.pyplot as plt
 # from IPython.core.display import HTML
 
 # workfolder = 'C:\Users\python\PycharmProjects\'
-webfolder = '/home/pi/Documents/'
+webfolder = '/var/www/html/coronavirus/'
 workfolder = '/home/pi/Documents/'
 # picsfolder = 'C:/Users/python/PycharmProjects/coronavirus//'
 # picsfolder = 'C:\\Users\\python\\PycharmProjects\\coronavirus\\state_deaths\\'
-picsfolder = '/home/pi/Documents/state_deaths/'
+#picsfolder = '/var/www/html/coronavirus/state_deaths/'
 #FOR TESTING LOCALLY, LEAVE IT COMMENTED
 #picsfolder = 'coronavirus/state_deaths/'
+picsfolder = 'state_deaths/'
 
 # csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
 csvfolder = '/home/pi/Documents/'
@@ -84,7 +85,7 @@ def make_html(webpage,table, total):
     if webpage == webfolder + 'index2.html':
         s = s + 'Sorted by Deaths_As_%_of Population_2018<br>'
     #6/26/2021
-    s = s + 'Note: Florida not reporting new deaths anymore <br>'
+    #s = s + 'Note: Florida not reporting new deaths anymore <br>'
 
     s = s + table
 

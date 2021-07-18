@@ -1,6 +1,7 @@
 __author__ = 'python'
-#version in dell laptop
+#version in rasberry pi
 #last modified
+#7/10/2021 fixed csvfolder
 #7/8/2021 version with no mysql
 #6/22/2021 moved to dell laptop
 #12/4/2020 fixed folder to /csv2, was /csv
@@ -14,27 +15,9 @@ import pandas as pd
 import datetime
 today = datetime.date.today()
 
-#filecsv = 'C:/Users/python/PycharmProjects/04-25-2020.csv'
-#filecsv = open('04-26-2020.csv')
-# csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
+
 csvfolder = '/home/pi/Documents/'
 dbfile = '/home/pi/Documents/data_usa.csv'
-# dfdb = pd.read_csv(dbfile)
-# Last_UpdateDB = dfdb.column_name.Last_Update #you can also use df['column_name']
-
-# csvfolder = 'C:/Users/admin/Documents/coronavirus/csv/'
-
-
-#not used
-# def get_date_from_csv(csvfile):
-#     f = open(csvfile, 'r')
-#     f.readline()
-#     #get second line only
-#     line = f.readline()
-#     a = line.split(',')[2]  #get the date
-#     b = a[0:10]             #yyyy-mm-dd only
-#     return b
-
 
 #exports to text file database contents of current csv file
 def load_csv_file(csvfile):

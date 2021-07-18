@@ -1,12 +1,10 @@
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.area.html
 # created from plots.py 11/14/2020
 # last update:
+#version in rpi
+#7/11/2021
 #7/10/2021
 #7/9/2021 version with no mysql
-#6/22/2021: version in dell laptop
-#12/3/2020 fix to remove axis to image
-#11/21/2020: created json files
-#11/21/2020: created state deaths files
 
 
 import pandas as pd
@@ -18,22 +16,27 @@ from pandas._libs import indexing
 from pandas.core.indexes.base import Index
 
 #globals-------------------------------------------------
-statedeathsfolder = 'C:/coronavirus/state_deaths2'
-# statedeathsfolder = r'C:\Users\admin\Documents\coronavirus\state_deaths'
-database = 'C:/coronavirus/data_usa.csv'
+statedeathsfolder = '//var/www/html/coronavirus/state_deaths'
+database = '/home/pi/Documents/data_usa.csv'
 
 #create dataframe from dbfile
 pd.set_option('display.max_rows', 20)
 country = ['US']
 df1 = pd.read_csv(database, encoding = 'latin1', thousands=',')
+df1 = df1.drop_duplicates()
+#df1.columns=df1.columns.str.strip()
+
+#entries=entries.sort(['i','j','ColumnA','ColumnB'])
 
 df1=df1.sort_values(by=['Province_State', 'Last_Update'])
+#df1=df1.sort_values(['Province_State', 'Last_Update'])
+
 list_columns = df1.columns
 lst_states = df1['Province_State'].unique()
 
 # only take diffs where next row is of the same group
 df1['diffs'] = np.where(df1.Province_State == df1.Province_State.shift(1), df1.Deaths.diff(), 0)
-df1.to_csv('c:/coronavirus/dataframe.csv', index=False)
+df1.to_csv('/home/pi/Documents/dataframe.csv', index=False)
 #--------------------------------------------------------
 
 #For each state create the death pics and csv and json exports
@@ -81,7 +84,6 @@ for state in lst_states:
      get_state_data(state)
 
 #-----------------------------------------------------------------------
-
 
 
 
