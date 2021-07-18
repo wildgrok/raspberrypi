@@ -33,7 +33,7 @@ print(columns)
 # df.loc[df['column_name'] == some_value]
 # only bring died with covid mentioned in SYMPTOM_TEXT
 df1 = df1.loc[df1['SYMPTOM_TEXT'] > '']
-df1 = df1[df1['SYMPTOM_TEXT'].str.contains('covid')]
+df1 = df1[df1['SYMPTOM_TEXT'].str.contains('covid','Covid','COVID')]
 df1 = df1.loc[df1['DIED'] == 'Y']
 print(df1)
 
@@ -91,14 +91,19 @@ df.set_index('RECVDATE')
 # df['DIED'].resample('M').count
 
 # df.groupby('RECVDATE').resample('M').count()
-df = df.groupby('RECVDATE').count('COUNT')
+df = df.groupby('RECVDATE').count()
+# df.groupby('User')['Amount'].agg(['sum', 'count'])
+# df.groupby('RECVDATE')['Deaths'].agg(['count'])
+
+
+# df['deads']=df.groupby(by='RECVDATE')['RECVDATE'].transform('count')
 
 print(df)
 
 total_deaths = df.DIED.sum()
 # start_date = df['RECVDATE'].min()
 # last_date =  df['RECVDATE'].max()
-# print('Total deaths from ', start_date, ' to ', last_date )
+print('Total deaths')
 print(total_deaths)
 
 columns = df.columns
