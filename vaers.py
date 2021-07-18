@@ -32,9 +32,17 @@ print(columns)
 #print(df1)
 # df.loc[df['column_name'] == some_value]
 # only bring died with covid mentioned in SYMPTOM_TEXT
-df1 = df1.loc[df1['SYMPTOM_TEXT'] > '']
-df1 = df1[df1['SYMPTOM_TEXT'].str.contains('covid','Covid','COVID')]
-df1 = df1.loc[df1['DIED'] == 'Y']
+# df1 = df1.loc[df1['DIED'] == 'Y']
+# df1 = df1.loc[df1['SYMPTOM_TEXT'] > '']
+# new_df = old_df[((old_df['C1'] > 0) & (old_df['C1'] < 20)) & ((old_df['C2'] > 0) & (old_df['C2'] < 20)) & ((old_df['C3'] > 0) & (old_df['C3'] < 20))]
+l = ['covid','Covid','COVID']
+df1 = df1[ (df1['DIED'] == 'Y') & ( df1['SYMPTOM_TEXT'] > '' )]
+
+# l = ['covid','Covid','COVID']
+# df1 = df1['SYMPTOM_TEXT'].str.lower().isin([x.lower() for x in l])
+df1[df1['SYMPTOM_TEXT'].str.lower().isin([x.lower() for x in l])]
+#df1 = df1[df1['SYMPTOM_TEXT'].str.contains('covid')]
+
 print(df1)
 
 
