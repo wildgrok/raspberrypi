@@ -44,9 +44,12 @@ l = ['covid','Covid','COVID']
 df1 = df1[df1['SYMPTOM_TEXT'].str.contains('covid', case = False)]
 print('df1 after string covid count')
 print(df1.VAERS_ID.count())
+print('Saving file all columns')
+df1.to_csv('c:/coronavirus/vaers_covid_deaths.csv', index=False)
 
 print('getting pic')
 df = df1.drop(['VAERS_ID','STATE','AGE_YRS','SYMPTOM_TEXT'], axis=1)
+
 
 df["RECVDATE"] = pd.to_datetime(df["RECVDATE"])
 
@@ -58,6 +61,9 @@ df = df.groupby('RECVDATE').count()
 total_deaths = df.DIED.sum()
 print('Total deaths after df.DIED.sum()')
 print(total_deaths)
+print('Saving file date and deaths only')
+# df.to_csv('c:/coronavirus/vaers_covid_deaths2.csv', index=False)
+df.to_csv('c:/coronavirus/vaers_covid_deaths2.csv')
 
 
 columns = df.columns
