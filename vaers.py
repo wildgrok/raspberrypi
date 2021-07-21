@@ -9,8 +9,11 @@ import matplotlib.pyplot as plt
 import datetime
 today = datetime.date.today()
 
+webfolder = 'c:/coronavirus/'
 csvfolder = 'C:/coronavirus/csv/'
+workfolder = 'c:/coronavirus/'
 dbfile = 'C:/Users/admin/Downloads/2021VAERSData/2021VAERSData.csv'
+webpage = webfolder + 'vaers.html'
 
 #------functions-----------------------------------
 # webpage is the file like index.html (full path)
@@ -65,26 +68,28 @@ print("df1 DIED and SYMPTOM_TEXT > '' and SYMPTON_TEXT contains covid count")
 deathscount = str(df1.VAERS_ID.count())
 print(deathscount)
 print('Saving file all columns')
-df1.to_csv('c:/coronavirus/vaers_covid_deaths.csv', index=False)
+#dropping redundant DIED column
+df3 = df1.drop(['DIED'], axis=1)
+df3.to_csv(workfolder + 'vaers_covid_deaths.csv', index=False)
 
-print('Creating webpage')
-# make_html(webpage,table, total, daterange)
-# table = df1.to_html(na_rep='')
-table = df1.to_html(na_rep='', escape=False)
-wp = 'c:/coronavirus/vaers_covid_deaths.html'
-# with open(wp, "w", encoding="utf-8") as f:
-# # with open(wp, 'wt') as f:
-#         f.write(table)
+print('Creating main webpage vaers.html')
+table = df3.to_html(na_rep='', escape=False)
+print('Saving plain html page only vaers_covid_deaths.html')
+wp = webfolder + 'vaers_covid_deaths.html'
+with open(wp, "w", encoding="utf-8") as f:
+     f.write(table)
 
-# print(table)
+# webpage = 'c:/coronavirus/vaers.html'
+#removing DIED column
+# df3 = df1.drop(['DIED'], axis=1)
 
-webpage = 'c:/coronavirus/vaers.html'
 make_html(webpage,table, deathscount, datesrange)
 
 
 
 
 print('getting pic')
+#here we use df1, which contains DIED
 df = df1.drop(['VAERS_ID','STATE','AGE_YRS','SYMPTOM_TEXT'], axis=1)
 
 
@@ -109,9 +114,9 @@ print('Total deaths after df.DIED.sum()')
 print(total_deaths)
 print('Saving file date and deaths only')
 # df.to_csv('c:/coronavirus/vaers_covid_deaths2.csv', index=False)
-df.to_csv('c:/coronavirus/vaers_covid_deaths2.csv')
+df.to_csv(workfolder + 'vaers_covid_deaths2.csv')
 # columns = df.columns
 ax = df.plot.area(stacked=False)
 # ax.set_axis_off()
-statejpgfile = 'c:/coronavirus/vaers.jpg'
+statejpgfile = webfolder + 'vaers.jpg'
 plt.savefig(statejpgfile)
