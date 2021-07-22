@@ -98,7 +98,7 @@ def make_html(webpage,table, total):
     if webpage == webfolder + 'index2_coronavirus.html':
         s = s  + '<a href="index_coronavirus.html">Sorted by New_Deaths</a><p>'
 
-    s = s  + '<a href="references2.html">Misc links</a><p>'
+    
     # s = s  + '<a href="index_old.html">Link to original site</a><p>'
     s = s + '</body>'
     s = s + '</html>'
