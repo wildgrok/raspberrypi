@@ -2,6 +2,7 @@
 #version in rpi4gb
 #from web_get_page2.py
 #last modified
+#7/22/2021 changed for VAERS pages
 #6/21/2021 testing in dell laptop
 #12/29/2020 read_csv uses usecols
 #12/2/2020 completed fixes for images
@@ -80,9 +81,9 @@ def make_html(webpage,table, total):
     s = '<h1>Coronavirus USA Data - updated daily</h1>'
     s = s + '<br><b>Date run: ' + today + ' - Total new deaths for today: ' + str(total) + '</b><br>'
 
-    if webpage == webfolder + 'index.html':
+    if webpage == webfolder + 'index_coronavirus.html':
         s = s + 'Sorted by New_Deaths<br>'
-    if webpage == webfolder + 'index2.html':
+    if webpage == webfolder + 'index2_coronavirus.html':
         s = s + 'Sorted by Deaths_As_%_of Population_2018<br>'
     #6/26/2021
     #s = s + 'Note: Florida not reporting new deaths anymore <br>'
@@ -92,10 +93,10 @@ def make_html(webpage,table, total):
     # s = s + '<b> Total new deaths for today: ' + str(total) + '</b>'
     s = s + '<p>'
 
-    if webpage == webfolder + 'index.html':
-        s = s  + '<a href="index2.html">Sorted by Deaths_As_%_of Population_2018</a><p>'
-    if webpage == webfolder + 'index2.html':
-        s = s  + '<a href="index.html">Sorted by New_Deaths</a><p>'
+    if webpage == webfolder + 'index_coronavirus.html':
+        s = s  + '<a href="index2_coronavirus.html">Sorted by Deaths_As_%_of Population_2018</a><p>'
+    if webpage == webfolder + 'index2_coronavirus.html':
+        s = s  + '<a href="index_coronavirus.html">Sorted by New_Deaths</a><p>'
 
     s = s  + '<a href="references2.html">Misc links</a><p>'
     # s = s  + '<a href="index_old.html">Link to original site</a><p>'
@@ -227,13 +228,13 @@ def get_data():
     # df_previous_day.to_html(webpage,escape=False, formatters=dict(Chart=path_to_image_html))
     html = df_previous_day.to_html(na_rep='', escape=False,  formatters=dict(Chart_New_Deaths=path_to_image_html))
 
-    webpage = webfolder + 'index.html'
+    webpage = webfolder + 'index_coronavirus.html'
     make_html(webpage, html, total)
 
     #sorted by Deaths_As_%_of Population_2018
     df_previous_day = df_previous_day.sort_values(by=['Deaths_As_%_of Population_2018'])
     html = df_previous_day.to_html(na_rep='', escape=False,  formatters=dict(Chart_New_Deaths=path_to_image_html))
-    webpage = webfolder + 'index2.html'
+    webpage = webfolder + 'index2_coronavirus.html'
     make_html(webpage, html, total)
 
 
