@@ -1,7 +1,7 @@
 #vaers.py
-#version in dell laptop
-#created 7/12/2021
+#version in rpi 6205
 #last modified
+#7/22/2021 imported from dell laptop
 #7/21/2021 changed web pages creation
 
 
@@ -12,10 +12,11 @@ import matplotlib.pyplot as plt
 import datetime
 today = datetime.date.today()
 
-webfolder = 'c:/coronavirus/'
-csvfolder = 'C:/coronavirus/csv/'
-workfolder = 'c:/coronavirus/'
-dbfile = 'C:/Users/admin/Downloads/2021VAERSData/2021VAERSData.csv'
+webfolder = '/var/www/html/coronavirus/'
+#csvfolder = 'C:/coronavirus/csv/'
+workfolder = '/home/pi/Documents/'
+dbfile = workfolder + '2021VAERSDATA.csv'
+#/home/pi/Documents/2021VAERSDATA.csv
 webpage = webfolder + 'vaers.html'
 webpage2 = webfolder + 'vaers2.html'
 
