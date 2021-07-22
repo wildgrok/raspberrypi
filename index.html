@@ -1,13 +1,13 @@
-{% extends 'coronavirus/base.html' %}
-{% block content %}
-{% if latest_link_list %}
-    <ul>
-    {% for link in latest_link_list %}  
-        <li><a href="{{ link.link_text }}">{{ link.link_notes }}</a></li>
-        <br>       
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No links are available.</p>
-{% endif %}
-{% endblock %}
+<html>
+    <body>
+        <title>
+        Coronavirus Data Site
+        </title>
+        <h1>
+        Coronavirus Data Site
+        </h1>
+        <a href="index_coronavirus.html">Coronavirus Daily Deaths</a><p>
+        <a href="index_vaers.html">VAERS Latest Deaths</a><p>
+	<a href="references2.html">Misc links</a><p>
+    </body>
+</html>
