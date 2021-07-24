@@ -15,7 +15,8 @@ today = datetime.date.today()
 webfolder = '/var/www/html/coronavirus/'
 #csvfolder = 'C:/coronavirus/csv/'
 workfolder = '/home/pi/Documents/'
-dbfile = workfolder + '2021VAERSDATA.csv'
+#dbfile = workfolder + '2020_AND_2021_VAERSData.csv'
+dbfile = workfolder + 'VAERSDATA.csv'
 #/home/pi/Documents/2021VAERSDATA.csv
 webpage = webfolder + 'vaers.html'
 webpage2 = webfolder + 'vaers2.html'
@@ -64,11 +65,14 @@ print(datesrange)
 
 print('df1 no limitations count')
 print(df1.VAERS_ID.count())
-df1 = df1[ (df1['DIED'] == 'Y') & (df1['SYMPTOM_TEXT'].str.contains('covid', case = False) | df1['SYMPTOM_TEXT'].str.contains('coronavirus', case = False) | df1['SYMPTOM_TEXT'].str.contains('sars-cov', case = False) )]
-# df1 = df1[ (df1['DIED'] == 'Y') & ( df1['SYMPTOM_TEXT'] > '' ) & df1['SYMPTOM_TEXT'].str.contains('covid', case = False)]
-print("df1 DIED and SYMPTOM_TEXT > '' and SYMPTON_TEXT contains covid or coronavirus count")
 
-deathscount = str(df1.VAERS_ID.count())
+
+df1 = df1[ (df1['DIED'] == 'Y') &  (df1['SYMPTOM_TEXT'].str.contains('covid', case = False) | df1['SYMPTOM_TEXT'].str.contains('coronavirus', case = False) )]
+#df1 = df1[ (df1['DIED'] == 'Y')]
+#print("df1 DIED and SYMPTOM_TEXT > '' and SYMPTON_TEXT contains covid, moderna, johnson, zeneca,coronavirus count")
+
+#deathscount = str(df1.VAERS_ID.count())
+deathscount = len(df1[df1['DIED'] == 'Y'])
 print(deathscount)
 print('Saving file all columns')
 #dropping redundant DIED column
