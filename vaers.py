@@ -1,6 +1,7 @@
 #vaers.py
 #version in rpi 6205
 #last modified
+#7/25/2021: fixed daterange
 #7/22/2021 imported from dell laptop
 #7/21/2021 changed web pages creation
 
@@ -52,8 +53,15 @@ columns = df1.columns
 print('Columns chosen:')
 for x in columns:
     print(x)
-datesrange = 'Dates range:' + df1['RECVDATE'].min() + ' to ' + df1['RECVDATE'].max()
+#7/25/2021    
+df1["RECVDATE"] = pd.to_datetime(df1["RECVDATE"])
+mindate = df1['RECVDATE'].min()
+maxdate = df1['RECVDATE'].max()
+print('mindate, maxdate', mindate, maxdate)
+datesrange = 'Dates range:' + str(mindate) + ' to ' + str(maxdate)
 print(datesrange)
+#datesrange = 'Dates range:' + df1['RECVDATE'].min() + ' to ' + df1['RECVDATE'].max()
+#print(datesrange)
 # print(columns)
 # Index(['VAERS_ID', 'RECVDATE', 'STATE', 'AGE_YRS', 'CAGE_YR', 'CAGE_MO', 'SEX',
 #        'RPT_DATE', 'SYMPTOM_TEXT', 'DIED', 'DATEDIED', 'L_THREAT', 'ER_VISIT',
@@ -63,8 +71,10 @@ print(datesrange)
 #        'FORM_VERS', 'TODAYS_DATE', 'BIRTH_DEFECT', 'OFC_VISIT', 'ER_ED_VISIT',
 #        'ALLERGIES'],
 
-print('df1 no limitations count')
-print(df1.VAERS_ID.count())
+print('df1 no limitations count of deaths')
+#print(df1.VAERS_ID.count())
+deathscount = len(df1[df1['DIED'] == 'Y'])
+print(deathscount)
 
 
 df1 = df1[ (df1['DIED'] == 'Y') &  (df1['SYMPTOM_TEXT'].str.contains('covid', case = False) | df1['SYMPTOM_TEXT'].str.contains('coronavirus', case = False) )]
@@ -73,7 +83,7 @@ df1 = df1[ (df1['DIED'] == 'Y') &  (df1['SYMPTOM_TEXT'].str.contains('covid', ca
 
 #deathscount = str(df1.VAERS_ID.count())
 deathscount = len(df1[df1['DIED'] == 'Y'])
-print(deathscount)
+print('deaths after limiting:',deathscount)
 print('Saving file all columns')
 #dropping redundant DIED column
 # df3 = df1.drop(['DIED'], axis=1)
