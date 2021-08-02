@@ -2,6 +2,7 @@
 # created from plots.py 11/14/2020
 # last update:
 #version in rpi
+#8/2/2021 added moing averages
 #7/11/2021
 #7/10/2021
 #7/9/2021 version with no mysql
@@ -66,11 +67,22 @@ def get_state_data(state):
     # images section--------------------
     print('getting pic for ' + state)
     # ax = df.plot.area()
-    ax = df.plot.area(stacked=False)
-    ax.set_axis_off()
+    #ax = df.plot.area(stacked=False)
+    #ax.set_axis_off()
     # ax.plot()
     # df.plot()
+    #statejpgfile = statedeathsfolder + '/' + state + '.jpg'
+    #plt.savefig(statejpgfile)
+    #8/2/2021
+    df['SMA_7'] = df.iloc[:,0].rolling(window=7).mean()
+    plt.figure(figsize=[10,5])
+    plt.grid(False)
+    plt.plot(df['Deaths'],label='deaths')
+    plt.plot(df['SMA_7'],label='SMA 7 days')
+    plt.legend(loc=2)
     statejpgfile = statedeathsfolder + '/' + state + '.jpg'
+    ax = df.plot.area(stacked=False)
+    ax.set_axis_off()
     plt.savefig(statejpgfile)
     #---------------------------------
 #================================================================
