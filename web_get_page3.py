@@ -80,11 +80,11 @@ def make_html(webpage,table, total):
     s = s + '<body>'
     s = '<h1>Coronavirus USA Data - updated daily</h1>'
     s = s + '<br><b>Date run: ' + today + ' - Total new deaths for today: ' + str(total) + '</b><br>'
-
+    s = s + '<b>Blue: daily new deaths Orange: 7 day moving average</b><br>'
     if webpage == webfolder + 'index_coronavirus.html':
-        s = s + 'Sorted by New_Deaths<br>'
+        s = s + '<br><b>Sorted by New_Deaths<b><br>'
     if webpage == webfolder + 'index2_coronavirus.html':
-        s = s + 'Sorted by Deaths_As_%_of Population_2018<br>'
+        s = s + '<b>Sorted by Deaths_As_%_of Population_2018<b><br>'
     #6/26/2021
     #s = s + 'Note: Florida not reporting new deaths anymore <br>'
 
