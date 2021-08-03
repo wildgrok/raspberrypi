@@ -2,6 +2,7 @@
 #version in rpi4gb
 #from web_get_page2.py
 #last modified
+#8/3/2021 pics display only 7 and 30 days moving average
 #8/2/2021 changed web page for moving averages
 #7/22/2021 changed for VAERS pages
 #6/21/2021 testing in dell laptop
@@ -76,17 +77,14 @@ def make_html(webpage,table, total):
     s = s + '<body>'
     s = '<h1>Coronavirus USA Data - updated daily</h1>'
     s = s + '<br><b>Date run: ' + today + ' - Total new deaths for today: ' + str(total) + '</b><br>'
-    s = s + '<b>Blue: 7 days moving average     Orange: 30 day moving average</b><br>'
+    s = s + '<b>Blue: 7 days moving average  -  Orange: 30 days moving average</b><br>'
+    
     if webpage == webfolder + 'index_coronavirus.html':
-        s = s + '<br><b>Sorted by New_Deaths<b><br>'
+        s = s  + '<a href="index2_coronavirus.html">Sorted by Deaths_As_%_of Population_2018</a><p>'
     if webpage == webfolder + 'index2_coronavirus.html':
-        s = s + '<b>Sorted by Deaths_As_%_of Population_2018<b><br>'
-    #6/26/2021
-    #s = s + 'Note: Florida not reporting new deaths anymore <br>'
+        s = s  + '<a href="index_coronavirus.html">Sorted by New_Deaths</a><p>'
 
     s = s + table
-
-    # s = s + '<b> Total new deaths for today: ' + str(total) + '</b>'
     s = s + '<p>'
 
     if webpage == webfolder + 'index_coronavirus.html':
@@ -94,8 +92,6 @@ def make_html(webpage,table, total):
     if webpage == webfolder + 'index2_coronavirus.html':
         s = s  + '<a href="index_coronavirus.html">Sorted by New_Deaths</a><p>'
 
-    
-    # s = s  + '<a href="index_old.html">Link to original site</a><p>'
     s = s + '</body>'
     s = s + '</html>'
     # webpage = webfolder + 'index.html'
@@ -200,7 +196,8 @@ def get_data():
 
     df_previous_day['Population_2018'] = carsdf['Population_2018']
     df_previous_day['Deaths_As_%_of Population_2018'] = df_previous_day['Deaths'].divide(df_previous_day['Population_2018']) * 100
-    df_previous_day['New_Deaths'] = np.where(df_previous_day['Deaths'] == df['Deaths'], 0, df['Deaths'] - df_previous_day['Deaths']) #create new column in df1 for price diff
+    df_previous_day['New_Deaths'] = np.where(df_previous_day['Deaths'] >= df['Deaths'], 0, df['Deaths'] - df_previous_day['Deaths']) #create new column in df1 for price diff
+
     df_previous_day = df_previous_day.sort_values(by=['New_Deaths'])
     for col in df_previous_day.columns:
         writelog(col)
