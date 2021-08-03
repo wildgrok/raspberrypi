@@ -2,6 +2,7 @@
 #version in rpi4gb
 #from web_get_page2.py
 #last modified
+#8/2/2021 changed web page for moving averages
 #7/22/2021 changed for VAERS pages
 #6/21/2021 testing in dell laptop
 #12/29/2020 read_csv uses usecols
@@ -63,11 +64,6 @@ def make_html_TEMP(table, total):
     s = '<h1>Coronavirus USA Data - updated daily</h1>'
     s = s + '<br><b>Date run: ' + today + '</b><br>'
     s = s + 'Site under maintenance'
-    # s = s + table
-    # s = s + '<b> Total new deaths for today: ' + str(total) + '</b>'
-    # s = s + '<p>'
-    # s = s  + '<a href="references2.html">Misc links</a><p>'
-    # s = s  + '<a href="index_old.html">Link to original site</a><p>'
     s = s + '</body>'
     s = s + '</html>'
     webpage = webfolder + 'index.html'
@@ -80,7 +76,7 @@ def make_html(webpage,table, total):
     s = s + '<body>'
     s = '<h1>Coronavirus USA Data - updated daily</h1>'
     s = s + '<br><b>Date run: ' + today + ' - Total new deaths for today: ' + str(total) + '</b><br>'
-    s = s + '<b>Blue: daily new deaths Orange: 7 day moving average</b><br>'
+    s = s + '<b>Blue: 7 days moving average     Orange: 30 day moving average</b><br>'
     if webpage == webfolder + 'index_coronavirus.html':
         s = s + '<br><b>Sorted by New_Deaths<b><br>'
     if webpage == webfolder + 'index2_coronavirus.html':

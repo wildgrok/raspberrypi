@@ -20,26 +20,7 @@ from pandas.core.indexes.base import Index
 statedeathsfolder = '//var/www/html/coronavirus/state_deaths'
 database = '/home/pi/Documents/data_usa.csv'
 
-#create dataframe from dbfile
-pd.set_option('display.max_rows', 20)
-country = ['US']
-df1 = pd.read_csv(database, encoding = 'latin1', thousands=',')
-df1 = df1.drop_duplicates()
-#df1.columns=df1.columns.str.strip()
-
-#entries=entries.sort(['i','j','ColumnA','ColumnB'])
-
-df1=df1.sort_values(by=['Province_State', 'Last_Update'])
-#df1=df1.sort_values(['Province_State', 'Last_Update'])
-
-list_columns = df1.columns
-lst_states = df1['Province_State'].unique()
-
-# only take diffs where next row is of the same group
-df1['diffs'] = np.where(df1.Province_State == df1.Province_State.shift(1), df1.Deaths.diff(), 0)
-df1.to_csv('/home/pi/Documents/dataframe.csv', index=False)
-#--------------------------------------------------------
-
+# functions -------------------------
 #For each state create the death pics and csv and json exports
 def get_state_data(state):   
     st = df1['Province_State'] == state
@@ -66,29 +47,48 @@ def get_state_data(state):
 
     # images section--------------------
     print('getting pic for ' + state)
-    # ax = df.plot.area()
-    #ax = df.plot.area(stacked=False)
-    #ax.set_axis_off()
-    # ax.plot()
-    # df.plot()
-    #statejpgfile = statedeathsfolder + '/' + state + '.jpg'
-    #plt.savefig(statejpgfile)
-    #8/2/2021
+    #8/3/2021
     df['SMA_7'] = df.iloc[:,0].rolling(window=7).mean()
+    df['SMA_30'] = df.iloc[:,0].rolling(window=30).mean()
+    # dropping Deaths for clear pic
+    df = df.drop(['Deaths'], axis=1)
     plt.figure(figsize=[10,5])
     plt.grid(False)
-    plt.plot(df['Deaths'],label='deaths')
+    # plt.plot(df['Deaths'],label='deaths')
     plt.plot(df['SMA_7'],label='SMA 7 days')
+    plt.plot(df['SMA_30'],label='SMA 30 days')
     plt.legend(loc=2)
+    # plt.xlim([25, 50])
     statejpgfile = statedeathsfolder + '/' + state + '.jpg'
     ax = df.plot.area(stacked=False)
     ax.set_axis_off()
     plt.savefig(statejpgfile)
     #---------------------------------
+
+# end of functions------------------------------------
+
+#create dataframe from dbfile
+pd.set_option('display.max_rows', 20)
+country = ['US']
+df1 = pd.read_csv(database, encoding = 'latin1', thousands=',')
+df1 = df1.drop_duplicates()
+#df1.columns=df1.columns.str.strip()
+
+#entries=entries.sort(['i','j','ColumnA','ColumnB'])
+
+df1=df1.sort_values(by=['Province_State', 'Last_Update'])
+#df1=df1.sort_values(['Province_State', 'Last_Update'])
+
+list_columns = df1.columns
+lst_states = df1['Province_State'].unique()
+
+# only take diffs where next row is of the same group
+df1['diffs'] = np.where(df1.Province_State == df1.Province_State.shift(1), df1.Deaths.diff(), 0)
+df1.to_csv('/home/pi/Documents/dataframe.csv', index=False)
+#--------------------------------------------------------
+
+
 #================================================================
-
-
-
 
 
 for state in lst_states:
