@@ -1,6 +1,7 @@
 #vaers.py
 #version in rpi 6205
 #last modified
+#8/3/2021 changed sort order (most recent first)
 #7/31/2021 added moving averages
 #7/30/2021 added drop_duplicates()
 #7/25/2021: fixed daterange
@@ -81,6 +82,7 @@ print(deathscount)
 
 
 df1 = df1[ (df1['DIED'] == 'Y') &  (df1['SYMPTOM_TEXT'].str.contains('covid', case = False) | df1['SYMPTOM_TEXT'].str.contains('coronavirus', case = False) )]
+df1 = df1.sort_values(by='RECVDATE', ascending=False)
 #df1 = df1[ (df1['DIED'] == 'Y')]
 #print("df1 DIED and SYMPTOM_TEXT > '' and SYMPTON_TEXT contains covid, moderna, johnson, zeneca,coronavirus count")
 
