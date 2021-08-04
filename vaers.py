@@ -1,6 +1,7 @@
 #vaers.py
 #version in rpi 6205
 #last modified
+#8/4/2021 removed dead column from webpage
 #8/3/2021 changed sort order (most recent first)
 #7/31/2021 added moving averages
 #7/30/2021 added drop_duplicates()
@@ -91,11 +92,11 @@ deathscount = len(df1[df1['DIED'] == 'Y'])
 print('deaths after limiting:',deathscount)
 print('Saving file all columns')
 #dropping redundant DIED column
-# df3 = df1.drop(['DIED'], axis=1)
+df3 = df1.drop(['DIED'], axis=1)
 df1.to_csv(workfolder + 'vaers_covid_deaths.csv', index=False)
 
 print('Creating main webpage vaers.html')
-table = df1.to_html(na_rep='', escape=False)
+table = df3.to_html(na_rep='', escape=False)
 print('Saving plain html page only vaers_covid_deaths.html')
 wp = webfolder + 'vaers_covid_deaths.html'
 with open(wp, "w", encoding="utf-8") as f:
