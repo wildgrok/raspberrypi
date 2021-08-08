@@ -1,10 +1,10 @@
+#!/usr/bin/python3.7
 #web_get_page3.py
-#version in rpi4gb
+#version in dell desktop
 #from web_get_page2.py
 #last modified
-#8/3/2021 pics display only 7 and 30 days moving average
-#8/2/2021 changed web page for moving averages
-#7/22/2021 changed for VAERS pages
+#8/8/2021 started adding population from file nst-est2019-01_edited2.csv
+#7/21/2021 changed web page to index_coronavirus.html
 #6/21/2021 testing in dell laptop
 #12/29/2020 read_csv uses usecols
 #12/2/2020 completed fixes for images
@@ -24,17 +24,18 @@ import matplotlib.pyplot as plt
 # from IPython.core.display import HTML
 
 # workfolder = 'C:\Users\python\PycharmProjects\'
-webfolder = '/var/www/html/coronavirus/'
-workfolder = '/home/pi/Documents/'
+webfolder = ''
+workfolder = ''
 # picsfolder = 'C:/Users/python/PycharmProjects/coronavirus//'
 # picsfolder = 'C:\\Users\\python\\PycharmProjects\\coronavirus\\state_deaths\\'
-#picsfolder = '/var/www/html/coronavirus/state_deaths/'
+picsfolder = 'state_deaths/'
 #FOR TESTING LOCALLY, LEAVE IT COMMENTED
 #picsfolder = 'coronavirus/state_deaths/'
-picsfolder = 'state_deaths/'
 
 # csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
-csvfolder = '/home/pi/Documents/'
+# csvfolder = 'C:/Users/admin/Documents/coronavirus/csv/'
+csvfolder = 'C:/coronavirus/csv/'
+
 
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
 #11/24/2020
@@ -54,8 +55,6 @@ def get_csv_filename(datestr):
     if len(day) < 2:
         day = '0' + day
     file = month + '-' + day + '-' + year + '.csv'
-    #to get missing date
-    #file = '07' + '-' + '06' + '-' + '2021' + '.csv'
     return file
 
 def make_html_TEMP(table, total):
@@ -65,6 +64,11 @@ def make_html_TEMP(table, total):
     s = '<h1>Coronavirus USA Data - updated daily</h1>'
     s = s + '<br><b>Date run: ' + today + '</b><br>'
     s = s + 'Site under maintenance'
+    # s = s + table
+    # s = s + '<b> Total new deaths for today: ' + str(total) + '</b>'
+    # s = s + '<p>'
+    # s = s  + '<a href="references2.html">Misc links</a><p>'
+    # s = s  + '<a href="index_old.html">Link to original site</a><p>'
     s = s + '</body>'
     s = s + '</html>'
     webpage = webfolder + 'index.html'
@@ -77,13 +81,12 @@ def make_html(webpage,table, total):
     s = s + '<body>'
     s = '<h1>Coronavirus USA Data - updated daily</h1>'
     s = s + '<br><b>Date run: ' + today + ' - Total new deaths for today: ' + str(total) + '</b><br>'
-    s = s + '<b>Blue: 7 days moving average  -  Orange: 30 days moving average</b><br>'
-    
-    if webpage == webfolder + 'index_coronavirus.html':
-        s = s  + '<a href="index2_coronavirus.html">Sorted by Deaths_As_%_of Population_2018</a><p>'
-    if webpage == webfolder + 'index2_coronavirus.html':
-        s = s  + '<a href="index_coronavirus.html">Sorted by New_Deaths</a><p>'
 
+    if webpage == webfolder + 'index_coronavirus.html':
+        s = s + 'Sorted by New_Deaths<br>'
+    if webpage == webfolder + 'index2_coronavirus.html':
+        s = s + 'Sorted by Deaths_As_%_of Population_2018<br>'
+    
     s = s + table
     s = s + '<p>'
 
@@ -94,7 +97,6 @@ def make_html(webpage,table, total):
 
     s = s + '</body>'
     s = s + '</html>'
-    # webpage = webfolder + 'index.html'
     with open(webpage, 'wt') as f:
         f.write(s)
 
@@ -196,9 +198,12 @@ def get_data():
 
     df_previous_day['Population_2018'] = carsdf['Population_2018']
     df_previous_day['Deaths_As_%_of Population_2018'] = df_previous_day['Deaths'].divide(df_previous_day['Population_2018']) * 100
-    df_previous_day['New_Deaths'] = np.where(df_previous_day['Deaths'] >= df['Deaths'], 0, df['Deaths'] - df_previous_day['Deaths']) #create new column in df1 for price diff
 
-    df_previous_day = df_previous_day.sort_values(by=['New_Deaths'])
+    df_previous_day['New_Deaths'] = np.where(df_previous_day['Deaths'] >= df['Deaths'], 0, df['Deaths'] - df_previous_day['Deaths']) 
+    # df_previous_day['New_Deaths'] = np.where(df_previous_day['Deaths'] > df['Deaths'], False, df['Deaths'] - df_previous_day['Deaths']) 
+
+    #df_previous_day = df_previous_day['New_Deaths' ]
+    df_previous_day = df_previous_day.sort_values(by=['New_Deaths', 'Province_State'])
     for col in df_previous_day.columns:
         writelog(col)
     total = df_previous_day['New_Deaths'].sum()
@@ -221,12 +226,14 @@ def get_data():
     # df_previous_day.to_html(webpage,escape=False, formatters=dict(Chart=path_to_image_html))
     html = df_previous_day.to_html(na_rep='', escape=False,  formatters=dict(Chart_New_Deaths=path_to_image_html))
 
+    # 7/21/2021
     webpage = webfolder + 'index_coronavirus.html'
     make_html(webpage, html, total)
 
     #sorted by Deaths_As_%_of Population_2018
-    df_previous_day = df_previous_day.sort_values(by=['Deaths_As_%_of Population_2018'])
+    df_previous_day = df_previous_day.sort_values(by=['Deaths_As_%_of Population_2018','Province_State'])
     html = df_previous_day.to_html(na_rep='', escape=False,  formatters=dict(Chart_New_Deaths=path_to_image_html))
+    # 7/21/2021
     webpage = webfolder + 'index2_coronavirus.html'
     make_html(webpage, html, total)
 
