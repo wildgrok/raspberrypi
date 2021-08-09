@@ -68,7 +68,7 @@ def make_html(webpage,table, total):
     s = s + '<b>Blue: 7 days moving average  -  Orange: 30 days moving average</b><br>'
     
     if webpage == webfolder + 'index_coronavirus.html':
-        s = s  + '<a href="index2_coronavirus.html">Sorted by Deaths_As_%_of Population_2018</a><p>'
+        s = s  + '<a href="index2_coronavirus.html">Sorted by Deaths_As_%_of Population_2019</a><p>'
     if webpage == webfolder + 'index2_coronavirus.html':
         s = s  + '<a href="index_coronavirus.html">Sorted by New_Deaths</a><p>'
 
@@ -76,7 +76,7 @@ def make_html(webpage,table, total):
     s = s + '<p>'
 
     if webpage == webfolder + 'index_coronavirus.html':
-        s = s  + '<a href="index2_coronavirus.html">Sorted by Deaths_As_%_of Population_2018</a><p>'
+        s = s  + '<a href="index2_coronavirus.html">Sorted by Deaths_As_%_of Population_2019</a><p>'
     if webpage == webfolder + 'index2_coronavirus.html':
         s = s  + '<a href="index_coronavirus.html">Sorted by New_Deaths</a><p>'
 
@@ -112,43 +112,6 @@ def get_data():
     writelog(yesterdayfile)
     get_data_to_csv(yesterdayfile, urlbase)
 
-
-    #----------------------------------adding car deaths 2018, needed for population 2018------------------------------
-    # Province_State,Population_2018,Vehicle miles traveled (millions),Fatal crashes,Deaths_Car_2018,"Deaths per 100,000 population",Deaths per 100 million vehicle miles traveled
-    # added usecols 12/29/2020
-    #carsdf = pd.read_csv((workfolder + 'car_accident_deaths_usa_2018.csv'), encoding = 'latin1', thousands=',', usecols = ['Province_State','Population_2018'])
-    #8/13/2020 only need population and car deaths
-    #carsdf = carsdf.set_index('Province_State')
-    # carsdf = carsdf.drop(['Vehicle miles traveled (millions)','Fatal crashes', "Deaths per 100,000 population", 'Deaths per 100 million vehicle miles traveled'], axis=1)
-    #carsdf = carsdf[['Population_2018']].apply(pd.to_numeric)
-    #writelog('these are the columns for car deaths 2018')
-
-    #for col in carsdf.columns:
-    #    writelog(col)
-    #html_cars = carsdf.to_html()
-    #webpage = webfolder + 'car_accident_deaths_usa_2018_2.html'
-    #with open(webpage, 'wt') as f:
-    #    f.write(html_cars)
-    #----------------------------------end of adding car deaths 2018--------------------------
-
-
-
-    #--------------------------------adding all deaths 2018-----------------------------------
-    # Province_State,Births,Fertility_Rate,Deaths,Death_Rate
-    # file: deaths_usa_2018.csv
-    # added usecols 12/29/2020
-    #deaths2018df = pd.read_csv((workfolder + 'deaths_usa_2018.csv'), encoding = 'latin1', thousands=',', usecols = ['Province_State','Deaths'])
-    #deaths2018df = deaths2018df.set_index('Province_State')
-    # deaths2018df = deaths2018df.drop(['Births','Fertility_Rate','Death_Rate'], axis=1)
-    #Adding population 2018
-    #deaths2018df['Population_2018'] = carsdf['Population_2018']
-    #deaths2018df = deaths2018df.rename(columns={"Deaths": "Deaths_All_Causes"})
-    #Deaths,Population_2018
-    #writelog('these are the columns - all deaths 2018')
-    #for col in deaths2018df.columns:
-    #     writelog(col)
-    #---------------------------------end of adding all deaths 2018---------------------------
-
     #8/9/2021
     df_population = pd.read_csv((workfolder + 'population_usa_2019.csv'), encoding = 'UTF-8', thousands=',')
     df_population['State'] = df_population['State'].str.strip()
@@ -160,12 +123,8 @@ def get_data():
         writelog(col)
         print(col)
 
-
     country = ['US']
-    # added usecols 12/29/2020
-    #Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,FIPS,Incident_Rate,Total_Test_Results,People_Hospitalized,Case_Fatality_Ratio,UID,ISO3,Testing_Rate,Hospitalization_Rate
-    #Province_State,Country_Region,Last_Update,Deaths
-
+    
     df1 = pd.read_csv((csvfolder + yesterdayfile), encoding = 'latin1', thousands=',', usecols = ['Province_State','Country_Region','Last_Update','Deaths'])
     df = df1[df1['Country_Region'].isin(country)]
     df = df.set_index('Province_State')
@@ -181,28 +140,14 @@ def get_data():
     else:
         df_previous_day = pd.read_csv((csvfolder + yesterdayfile), encoding = 'latin1',thousands=',' ,usecols = ['Province_State','Country_Region','Last_Update','Deaths'])
 
-
-
     df_previous_day = df_previous_day.set_index('Province_State')
-
-    #11/11/2020
-    # df_previous_day = df_previous_day.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate', 'Mortality_Rate'], axis=1)
-    # df_previous_day = df_previous_day.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',                        'People_Hospitalized',  'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate'                  ], axis=1)
-    # df_previous_day = df_previous_day.drop(['Total_Test_Results',	'Case_Fatality_Ratio'], axis=1)
     df_previous_day = df_previous_day.drop(['Country_Region'], axis=1)
 
-
-
-    #df_previous_day['Population_2018'] = carsdf['Population_2018']
-    #df_previous_day['Deaths_As_%_of Population_2018'] = df_previous_day['Deaths'].divide(df_previous_day['Population_2018']) * 100
     #8/9/2021
     df_previous_day['Population_2019'] = df_population['Population_2019']
     df_previous_day['Deaths_As_%_of Population_2019'] = df_previous_day['Deaths'].divide(df_previous_day['Population_2019']) * 100
 
-    
-    
     df_previous_day['New_Deaths'] = np.where(df_previous_day['Deaths'] >= df['Deaths'], 0, df['Deaths'] - df_previous_day['Deaths']) #create new column in df1 for deaths diff
-
     df_previous_day = df_previous_day.sort_values(by=['New_Deaths', 'Province_State'])
     for col in df_previous_day.columns:
         writelog(col)
@@ -219,9 +164,6 @@ def get_data():
     # DO NOT ENABLE THIS, we miss states like New York
     # keep only the ones that are within +3 to -3 standard deviations in the column 'Deaths'.
     #df_previous_day = df_previous_day[np.abs(df_previous_day.Deaths-df_previous_day.Deaths.mean()) <= (3*df_previous_day.Deaths.std())]
-
-
-
     # Saving the dataframe as a webpage na_rep to prevent Nan in page for no values or null
     # df_previous_day.to_html(webpage,escape=False, formatters=dict(Chart=path_to_image_html))
     html = df_previous_day.to_html(na_rep='', escape=False,  formatters=dict(Chart_New_Deaths=path_to_image_html))
