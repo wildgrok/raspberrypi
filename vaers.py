@@ -1,6 +1,7 @@
 #vaers.py
 #version in rpi 6205
 #last modified
+#8/15/2021 added deletion of movig av file before creation
 #8/4/2021 removed dead column from webpage
 #8/3/2021 changed sort order (most recent first)
 #7/31/2021 added moving averages
@@ -60,6 +61,13 @@ for x in columns:
     print(x)
 #7/25/2021    
 df1["RECVDATE"] = pd.to_datetime(df1["RECVDATE"])
+
+#8/15/2021 limit to years 2020 and up
+mask = (df1['RECVDATE'] > '2019-12-31')
+df1 = df1.loc[mask]
+
+
+
 mindate = df1['RECVDATE'].min()
 maxdate = df1['RECVDATE'].max()
 print('mindate, maxdate', mindate, maxdate)
@@ -157,4 +165,7 @@ plt.plot(df['SMA_30'],label='SMA 30 days')
 # plt.plot(df['SMA_4'],label='SMA 4 Months')
 plt.legend(loc=2)
 statejpgfile = webfolder + 'vaers_moving_average.jpg'
+#8/15/2021
+if os.path.exists(statejpgfile):
+    os.remove(statejpgfile)
 plt.savefig(statejpgfile)
