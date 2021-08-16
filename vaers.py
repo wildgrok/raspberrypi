@@ -1,6 +1,7 @@
 #vaers.py
 #version in dell laptop imported from rpi 6205
 #last modified
+#8/16/2021 created graph vaers_vaccine_doses.jpg
 #8/15/2021 automating data from all data from zip file
 #8/10/2021 started to work on vaccines file to be continued
 #https://github.com/govex/COVID-19/blob/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv
@@ -92,9 +93,6 @@ webpage2 = webfolder + 'vaers2.html'
 # vaccine_data_us_csv = 'https://github.com/govex/COVID-19/blob/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv'
 vaccine_data_us_csv = 'https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv'
 
-#------functions-----------------------------------
-#------end of functions----------------------------
-
 pd.set_option('display.max_rows', 5)
 
 #8/10/2021rf_model_on_full_data
@@ -108,18 +106,20 @@ get_data_to_csv(vaccine_data_us_csv)
 # 1,Alabama,US,2021-08-10,32.3182,-86.9023,Janssen,,281300,124309,127027,,"Alabama, US"
 # 1,Alabama,US,2021-08-10,32.3182,-86.9023,Unknown,,0,4,,,"Alabama, US"
 
-# cols_chosen = 'Province_State,Vaccine_Type'
+# cols_chosen = 'Province_State,Vaccine_Type, Doses_admin'
 file = csvfolder + 'vaccine_data_us.csv'
 df_vac = pd.read_csv(file, encoding='latin1',thousands=',', low_memory=False, usecols = ['Province_State','Vaccine_Type','Doses_admin'])
 df_vac = df_vac.set_index('Province_State')
 df_vac = df_vac.drop_duplicates()
-# df_vac = df_vac[['Doses_admin']].apply(pd.to_numeric)
-# options = ['Pfizer', 'Moderna'] 
-# selecting rows based on condition
-# df_vac2 = df_vac[df_vac['Vaccine_Type'].isin(options)]
-# df_vac= df_vac[(df_vac['Vaccine_Type'] == 'Pfizer')] #]) &  (df1['SYMPTOM_TEXT'].str.contains('covid', case = False) | df1['SYMPTOM_TEXT'].str.contains('coronavirus', case = False) )]
-# print(df_vac2.head())
-
+#8/15/2021
+mask = (df_vac['Vaccine_Type'] == 'Pfizer') |  (df_vac['Vaccine_Type'] == 'Moderna') 
+df_vac = df_vac.loc[mask]
+df_vac['Total_Doses'] = df_vac.groupby(['Province_State']).sum('Doses_admin')
+df_vac = df_vac.drop(['Vaccine_Type', 'Doses_admin'], axis=1)
+df_vac = df_vac.drop_duplicates()
+# df_vac = df_vac.sort_values(by=['Total_Doses'])
+# print('df_vac.head()')
+# print(df_vac.head())
 
 columns = df_vac.columns
 print('Columns chosen:')
@@ -127,6 +127,23 @@ for x in columns:
     print(x)
 print(df_vac.head())
 print(df_vac.describe())
+
+#8/16/2021
+# df['SMA_7'] = df.iloc[:,0].rolling(window=7).mean()
+# df['SMA_30'] = df.iloc[:,0].rolling(window=30).mean()
+plt.figure(figsize=[15,10])
+plt.grid(True)
+plt.plot(df_vac['Total_Doses'],label='Total Doses')
+# plt.plot(df_vac['SMA_7'],label='SMA 7 days')
+# plt.plot(df_vac['SMA_30'],label='SMA 30 days')
+# plt.plot(df['SMA_4'],label='SMA 4 Months')
+plt.legend(loc=2)
+statejpgfile = webfolder + 'vaers_vaccine_doses.jpg'
+#delete if exists
+if os.path.exists(statejpgfile):
+    os.remove(statejpgfile)
+plt.savefig(statejpgfile)
+
 
 
 
@@ -143,7 +160,7 @@ for x in columns:
 df1["RECVDATE"] = pd.to_datetime(df1["RECVDATE"])
 
 #8/15/2021
-mask = (df1['RECVDATE'] > '2019-12-31') & (df1['RECVDATE'] < '2022-01-01')
+mask = (df1['RECVDATE'] > '2019-12-31')
 # Select the sub-DataFrame:
 # df.loc[mask]
 # or re-assign to df
