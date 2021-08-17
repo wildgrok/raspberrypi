@@ -1,6 +1,7 @@
 #vaers.py
 #version in dell laptop imported from rpi 6205
 #last modified
+#8/17/2021 moved code of doses to function for clarity
 #8/16/2021 created graph vaers_vaccine_doses.jpg
 #8/15/2021 automating data from all data from zip file
 #8/10/2021 started to work on vaccines file to be continued
@@ -77,6 +78,49 @@ def get_data_to_csv(url):
     print(r.encoding)
     # print(csvfile)
 
+#8/17/2021 
+def vaccine_doses():
+    #8/10/2021rf_model_on_full_data
+    get_data_to_csv(vaccine_data_us_csv_url)
+    # Sample data
+    # FIPS  ,   Province_State    ,    Country_Region    ,    Date          ,       Lat        ,     Long_     ,     Vaccine_Type   , Doses_alloc    ,    Doses_shipped   ,   Doses_admin    ,   Stage_One_Doses    ,   Stage_Two_Doses   ,   Combined_Key
+    # 1     ,   Alabama           ,        US            ,    2021-08-10    ,       32.3182     ,    -86.9023  ,     Pfizer         ,                ,    2608740         ,   1898892        ,                      ,   832153            ,   "Alabama, US"
+    # 1,Alabama,US,2021-08-10,32.3182,-86.9023,Moderna,,2439960,1689328,,751583,"Alabama, US"
+    # 1,Alabama,US,2021-08-10,32.3182,-86.9023,All,,5330000,3712533,2217468,1583987,"Alabama, US"
+   
+    # cols_chosen = 'Province_State,Vaccine_Type, Doses_admin'
+    file = csvfolder + 'vaccine_data_us.csv'
+    df_vac = pd.read_csv(file, encoding='latin1',thousands=',', low_memory=False, usecols = ['Province_State','Vaccine_Type','Doses_admin'])
+    df_vac = df_vac.set_index('Province_State')
+    df_vac = df_vac.drop_duplicates()
+    #8/15/2021
+    mask = (df_vac['Vaccine_Type'] == 'Pfizer') |  (df_vac['Vaccine_Type'] == 'Moderna') 
+    df_vac = df_vac.loc[mask]
+    df_vac['Total_Doses'] = df_vac.groupby(['Province_State']).sum('Doses_admin')
+    df_vac = df_vac.drop(['Vaccine_Type', 'Doses_admin'], axis=1)
+    df_vac = df_vac.drop_duplicates()
+    # df_vac = df_vac.sort_values(by=['Total_Doses'])
+
+    columns = df_vac.columns
+    print('Columns chosen:')
+    for x in columns:
+        print(x)
+    print(df_vac.head())
+    print(df_vac.describe())
+
+    plt.figure(figsize=[15,10])
+    plt.grid(True)
+    plt.plot(df_vac['Total_Doses'],label='Total Doses')
+    # plt.plot(df_vac['SMA_7'],label='SMA 7 days')
+    plt.legend(loc=2)
+    statejpgfile = webfolder + 'vaers_vaccine_doses.jpg'
+    #delete if exists
+    if os.path.exists(statejpgfile):
+        os.remove(statejpgfile)
+    plt.savefig(statejpgfile)
+
+
+
 #------------------------end of functions------------------------------------------------------
 
 folder_csv = 'C:/Users/admin/Downloads/AllVAERSDataCSVS'
@@ -90,59 +134,12 @@ dbfile = folder_csv + '/' + 'VAERSDATA.csv'
 #/home/pi/Documents/VAERSDATA.csv
 webpage = webfolder + 'vaers.html'
 webpage2 = webfolder + 'vaers2.html'
-# vaccine_data_us_csv = 'https://github.com/govex/COVID-19/blob/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv'
-vaccine_data_us_csv = 'https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv'
+vaccine_data_us_csv_url = 'https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv'
 
 pd.set_option('display.max_rows', 5)
 
-#8/10/2021rf_model_on_full_data
-get_data_to_csv(vaccine_data_us_csv)
-# Sample data
-# FIPS  ,   Province_State    ,    Country_Region    ,    Date          ,       Lat        ,     Long_     ,     Vaccine_Type   , Doses_alloc    ,    Doses_shipped   ,   Doses_admin    ,   Stage_One_Doses    ,   Stage_Two_Doses   ,   Combined_Key
-# 1     ,   Alabama           ,        US            ,    2021-08-10    ,       32.3182     ,    -86.9023  ,     Pfizer         ,                ,    2608740         ,   1898892        ,                      ,   832153            ,   "Alabama, US"
-# 1,Alabama,US,2021-08-10,32.3182,-86.9023,Moderna,,2439960,1689328,,751583,"Alabama, US"
-# 1,Alabama,US,2021-08-10,32.3182,-86.9023,All,,5330000,3712533,2217468,1583987,"Alabama, US"
-# 1,Alabama,US,2021-08-10,32.3182,-86.9023,Unassigned,,0,0,2090441,251,"Alabama, US"
-# 1,Alabama,US,2021-08-10,32.3182,-86.9023,Janssen,,281300,124309,127027,,"Alabama, US"
-# 1,Alabama,US,2021-08-10,32.3182,-86.9023,Unknown,,0,4,,,"Alabama, US"
-
-# cols_chosen = 'Province_State,Vaccine_Type, Doses_admin'
-file = csvfolder + 'vaccine_data_us.csv'
-df_vac = pd.read_csv(file, encoding='latin1',thousands=',', low_memory=False, usecols = ['Province_State','Vaccine_Type','Doses_admin'])
-df_vac = df_vac.set_index('Province_State')
-df_vac = df_vac.drop_duplicates()
-#8/15/2021
-mask = (df_vac['Vaccine_Type'] == 'Pfizer') |  (df_vac['Vaccine_Type'] == 'Moderna') 
-df_vac = df_vac.loc[mask]
-df_vac['Total_Doses'] = df_vac.groupby(['Province_State']).sum('Doses_admin')
-df_vac = df_vac.drop(['Vaccine_Type', 'Doses_admin'], axis=1)
-df_vac = df_vac.drop_duplicates()
-# df_vac = df_vac.sort_values(by=['Total_Doses'])
-# print('df_vac.head()')
-# print(df_vac.head())
-
-columns = df_vac.columns
-print('Columns chosen:')
-for x in columns:
-    print(x)
-print(df_vac.head())
-print(df_vac.describe())
-
-#8/16/2021
-# df['SMA_7'] = df.iloc[:,0].rolling(window=7).mean()
-# df['SMA_30'] = df.iloc[:,0].rolling(window=30).mean()
-plt.figure(figsize=[15,10])
-plt.grid(True)
-plt.plot(df_vac['Total_Doses'],label='Total Doses')
-# plt.plot(df_vac['SMA_7'],label='SMA 7 days')
-# plt.plot(df_vac['SMA_30'],label='SMA 30 days')
-# plt.plot(df['SMA_4'],label='SMA 4 Months')
-plt.legend(loc=2)
-statejpgfile = webfolder + 'vaers_vaccine_doses.jpg'
-#delete if exists
-if os.path.exists(statejpgfile):
-    os.remove(statejpgfile)
-plt.savefig(statejpgfile)
+#8/17/2021 moved code to here for clarity
+vaccine_doses()
 
 
 
@@ -194,7 +191,7 @@ print('Saving deaths file all columns')
 df0.to_csv(workfolder + 'vaers_covid_deaths0.csv', index=False)
 
 
-df1 = df0[ (df0['SYMPTOM_TEXT'].str.contains('covid', case = False) | df0['SYMPTOM_TEXT'].str.contains('coronavirus', case = False) )]
+df1 = df0[ (df0['SYMPTOM_TEXT'].str.contains('covid', case = False) | df0['SYMPTOM_TEXT'].str.contains('coronavirus', case = False) ) ]
 df1 = df1.sort_values(by='RECVDATE', ascending = False)
 deathscount = len(df1[df1['DIED'] == 'Y'])
 print(deathscount)
