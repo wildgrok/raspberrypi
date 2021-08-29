@@ -1,19 +1,12 @@
-#!/usr/bin/python3.7
 #web_get_page3.py
-#version in dell desktop
+#version in rpi4gb
 #from web_get_page2.py
 #last modified
-#8/29/2021 added percentage of all deaths for usa population
-#8/17/2021 imported function vaccine_doses from vaers.py
-#8/8/2021 started adding population from file population_usa_2019.csv
-#7/21/2021 changed web page to index_coronavirus.html
-#6/21/2021 testing in dell laptop
-#12/29/2020 read_csv uses usecols
-#12/2/2020 completed fixes for images
-#11/24/2020 working adding display of jpg, not ready yet
-#11/11/2020 fixing error see file errors_11_11_2020.txt
-#KeyError: "['People_Tested' 'Mortality_Rate'] not found in axis" in line 131
-
+#8/29/2021 added total percentage
+#8/9/2021 changed for population 2019
+#8/3/2021 pics display only 7 and 30 days moving average, fixed negative deaths display
+#8/2/2021 changed web page for moving averages
+#7/22/2021 changed for VAERS pages
 
 import sys
 import os
@@ -23,22 +16,17 @@ import numpy as np
 import datetime
 import io
 import matplotlib.pyplot as plt
+# from IPython.core.display import HTML
 
-#-----------------globals--------------------------------------------
 # workfolder = 'C:\Users\python\PycharmProjects\'
-webfolder = ''
-workfolder = ''
-# picsfolder = 'C:/Users/python/PycharmProjects/coronavirus//'
-# picsfolder = 'C:\\Users\\python\\PycharmProjects\\coronavirus\\state_deaths\\'
+webfolder = '/var/www/html/coronavirus/'
+workfolder = '/home/pi/Documents/'
 picsfolder = 'state_deaths/'
-#FOR TESTING LOCALLY, LEAVE IT COMMENTED
-#picsfolder = 'coronavirus/state_deaths/'
-# csvfolder = 'C:/Users/admin/Documents/coronavirus/csv/'
-csvfolder = 'C:/coronavirus/csv/'
-urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
-#-----------------------globals end----------------------------------------------------------------------
+# csvfolder = 'C:/Users/python/PycharmProjects/coronavirus/csv2/'
+csvfolder = '/home/pi/Documents/'
 
-#-----------------------functions start-------------------------------------------------------------
+urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
+#11/24/2020
 def path_to_image_html(path):
     return '<img src="'+ path + '" width="200" >'
 
@@ -55,6 +43,8 @@ def get_csv_filename(datestr):
     if len(day) < 2:
         day = '0' + day
     file = month + '-' + day + '-' + year + '.csv'
+    #to get missing date
+    #file = '07' + '-' + '06' + '-' + '2021' + '.csv'
     return file
 
 def make_html_TEMP(table, total):
@@ -66,7 +56,7 @@ def make_html_TEMP(table, total):
     s = s + 'Site under maintenance'
     s = s + '</body>'
     s = s + '</html>'
-    webpage = webfolder + 'index_coronavirus.html'
+    webpage = webfolder + 'index.html'
     with open(webpage, 'wt') as f:
         f.write(s)
 
@@ -77,14 +67,14 @@ def make_html(webpage,table, total, death_percent_today):
     s = '<h1>Coronavirus USA Data - updated daily</h1>'
     s = s + '<br><b>Date run: ' + today + ' - Total new deaths for today: ' + str(total) + '</b><br>'
     #8/29/2021
-    s = s + '<br><b>Estimated percentage of deaths if the year has this number of deaths every day: ' + str(death_percent_today) + '</b><br>'
-
-
-    if webpage == webfolder + 'index_coronavirus.html':
-        s = s + 'Sorted by New_Deaths<br>'
-    if webpage == webfolder + 'index2_coronavirus.html':
-        s = s + 'Sorted by Deaths_As_%_of Population_2019<br>'
+    s = s + '<br><b>Estimated percentage of deaths if the year has this number of deaths every day: ' + str(death_percent_today) + '</b><br>'    
+    s = s + '<b>Blue: 7 days moving average  -  Orange: 30 days moving average</b><br>'
     
+    if webpage == webfolder + 'index_coronavirus.html':
+        s = s  + '<a href="index2_coronavirus.html">Sorted by Deaths_As_%_of Population_2019</a><p>'
+    if webpage == webfolder + 'index2_coronavirus.html':
+        s = s  + '<a href="index_coronavirus.html">Sorted by New_Deaths</a><p>'
+
     s = s + table
     s = s + '<p>'
 
@@ -95,6 +85,7 @@ def make_html(webpage,table, total, death_percent_today):
 
     s = s + '</body>'
     s = s + '</html>'
+    # webpage = webfolder + 'index.html'
     with open(webpage, 'wt') as f:
         f.write(s)
 
@@ -124,8 +115,7 @@ def get_data():
     writelog(yesterdayfile)
     get_data_to_csv(yesterdayfile, urlbase)
 
-
-    #8/8/2021
+    #8/9/2021
     df_population = pd.read_csv((workfolder + 'population_usa_2019.csv'), encoding = 'UTF-8', thousands=',')
     df_population['State'] = df_population['State'].str.strip()
     df_population = df_population.rename(columns={"State": "Province_State", "Population estimate, July 1, 2019": "Population_2019"})
@@ -134,14 +124,10 @@ def get_data():
     writelog('these are the columns - population_usa_2019.csv')
     for col in df_population.columns:
         writelog(col)
-        # print(col)
-    #print(df_population.index)
+        print(col)
 
     country = ['US']
-    # added usecols 12/29/2020
-    #Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,FIPS,Incident_Rate,Total_Test_Results,People_Hospitalized,Case_Fatality_Ratio,UID,ISO3,Testing_Rate,Hospitalization_Rate
-    #Province_State,Country_Region,Last_Update,Deaths
-
+    
     df1 = pd.read_csv((csvfolder + yesterdayfile), encoding = 'latin1', thousands=',', usecols = ['Province_State','Country_Region','Last_Update','Deaths'])
     df = df1[df1['Country_Region'].isin(country)]
     df = df.set_index('Province_State')
@@ -156,21 +142,21 @@ def get_data():
         df_previous_day = pd.read_csv((csvfolder + dayagofile), encoding = 'latin1',thousands=',' ,usecols = ['Province_State','Country_Region','Last_Update','Deaths'])
     else:
         df_previous_day = pd.read_csv((csvfolder + yesterdayfile), encoding = 'latin1',thousands=',' ,usecols = ['Province_State','Country_Region','Last_Update','Deaths'])
+
     df_previous_day = df_previous_day.set_index('Province_State')
     df_previous_day = df_previous_day.drop(['Country_Region'], axis=1)
 
-    #8/8/2021------
+    #8/9/2021
     df_previous_day['Population_2019'] = df_population['Population_2019']
     df_previous_day['Deaths_As_%_of Population_2019'] = df_previous_day['Deaths'].divide(df_previous_day['Population_2019']) * 100
 
-    df_previous_day['New_Deaths'] = np.where(df_previous_day['Deaths'] >= df['Deaths'], 0, df['Deaths'] - df_previous_day['Deaths']) 
-    # df_previous_day['New_Deaths'] = np.where(df_previous_day['Deaths'] > df['Deaths'], False, df['Deaths'] - df_previous_day['Deaths']) 
-    #df_previous_day = df_previous_day['New_Deaths' ]
+    df_previous_day['New_Deaths'] = np.where(df_previous_day['Deaths'] >= df['Deaths'], 0, df['Deaths'] - df_previous_day['Deaths']) #create new column in df1 for deaths diff
     df_previous_day = df_previous_day.sort_values(by=['New_Deaths', 'Province_State'])
     for col in df_previous_day.columns:
         writelog(col)
     total = df_previous_day['New_Deaths'].sum()
-
+    writelog(str(total))
+    
     #8/29/2021
     total_population_20219_usa = df_previous_day['Population_2019'].sum()
     print('total population usa 2019', total_population_20219_usa)
@@ -179,16 +165,15 @@ def get_data():
     print('Assuming today deaths are the same for one year this is the USA death perpecentage estimate')
     usa_death_percentage_year_estimate = ((total * 365) / (total_population_20219_usa))  * 100
     print('usa_death_percentage_year_estimate', usa_death_percentage_year_estimate)
+    
+    
 
-
-    writelog(str(total))
-    writelog('Create a list named states to store all the image paths')
+    # Create a list named states to store all the image paths
     states = picsfolder + df_previous_day.index + '.jpg'
     df_previous_day['Chart_New_Deaths'] = states
     writelog('state pics:')
     for x in states:
         writelog(x)
-    # print(states)
 
     # DO NOT ENABLE THIS, we miss states like New York
     # keep only the ones that are within +3 to -3 standard deviations in the column 'Deaths'.
@@ -196,57 +181,17 @@ def get_data():
     # Saving the dataframe as a webpage na_rep to prevent Nan in page for no values or null
     # df_previous_day.to_html(webpage,escape=False, formatters=dict(Chart=path_to_image_html))
     html = df_previous_day.to_html(na_rep='', escape=False,  formatters=dict(Chart_New_Deaths=path_to_image_html))
-    # 7/21/2021
+
     webpage = webfolder + 'index_coronavirus.html'
-
-    #8/29/2021
-    # make_html(webpage, html, total)
     make_html(webpage, html, total, usa_death_percentage_year_estimate)
-
-
 
     #sorted by Deaths_As_%_of Population_2019
-    #8/8/2021
-    df_previous_day = df_previous_day.sort_values(by=['Deaths_As_%_of Population_2019','Province_State'])
+    #8/9/2021
+    df_previous_day = df_previous_day.sort_values(by=['Deaths_As_%_of Population_2019', 'Province_State'])
     html = df_previous_day.to_html(na_rep='', escape=False,  formatters=dict(Chart_New_Deaths=path_to_image_html))
-    # 7/21/2021
     webpage = webfolder + 'index2_coronavirus.html'
-    #8/29/2021
-    # make_html(webpage, html, total)
     make_html(webpage, html, total, usa_death_percentage_year_estimate)
-    # end of get_data----------------------------------------
 
-#8/17/2021 imported from vaers.py, not used yet
-def vaccine_doses():
-    #8/10/2021rf_model_on_full_data
-    vaccine_data_us_csv_url = 'https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv'
-    get_data_to_csv(vaccine_data_us_csv_url)
-    # Sample data
-    # FIPS  ,   Province_State    ,    Country_Region    ,    Date          ,       Lat        ,     Long_     ,     Vaccine_Type   , Doses_alloc    ,    Doses_shipped   ,   Doses_admin    ,   Stage_One_Doses    ,   Stage_Two_Doses   ,   Combined_Key
-    # 1     ,   Alabama           ,        US            ,    2021-08-10    ,       32.3182     ,    -86.9023  ,     Pfizer         ,                ,    2608740         ,   1898892        ,                      ,   832153            ,   "Alabama, US"
-    # 1,Alabama,US,2021-08-10,32.3182,-86.9023,Moderna,,2439960,1689328,,751583,"Alabama, US"
-    # 1,Alabama,US,2021-08-10,32.3182,-86.9023,All,,5330000,3712533,2217468,1583987,"Alabama, US"
-   
-    # cols_chosen = 'Province_State,Vaccine_Type, Doses_admin'
-    file = csvfolder + 'vaccine_data_us.csv'
-    df_vac = pd.read_csv(file, encoding='latin1',thousands=',', low_memory=False, usecols = ['Province_State','Vaccine_Type','Doses_admin'])
-    df_vac = df_vac.set_index('Province_State')
-    df_vac = df_vac.drop_duplicates()
-    #8/15/2021
-    mask = (df_vac['Vaccine_Type'] == 'Pfizer') |  (df_vac['Vaccine_Type'] == 'Moderna') 
-    df_vac = df_vac.loc[mask]
-    df_vac['Total_Doses'] = df_vac.groupby(['Province_State']).sum('Doses_admin')
-    df_vac = df_vac.drop(['Vaccine_Type', 'Doses_admin'], axis=1)
-    df_vac = df_vac.drop_duplicates()
-    # df_vac = df_vac.sort_values(by=['Total_Doses'])
-
-    columns = df_vac.columns
-    print('Columns chosen:')
-    for x in columns:
-        print(x)
-    print(df_vac.head())
-    print(df_vac.describe())
-    # end of vaccine_doses------------
 
 # Run program 
 if __name__ == '__main__':
