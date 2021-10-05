@@ -2,6 +2,7 @@
 #version in rpi4gb
 #from web_get_page2.py
 #last modified
+#10/5/2021 added vac functions from desktop
 #8/29/2021 added total percentage
 #8/9/2021 changed for population 2019
 #8/3/2021 pics display only 7 and 30 days moving average, fixed negative deaths display
@@ -102,7 +103,24 @@ def get_data_to_csv(csvfile, urlbase):
     writelog(r.headers['content-type'])
     writelog(r.encoding)
     writelog(csvfile)
-
+    #end of get_data_to_csv--------------------------
+    
+#used by vaccine_doses
+def get_data_to_csv_vac(url):
+    # url = urlbase + csvfile
+    print(url)
+    print('Beginning file download with requests: vaccine_data_us.csv')
+    r = requests.get(url)
+    if os.path.exists(csvfolder + 'vaccine_data_us.csv'):
+        os.remove(csvfolder + 'vaccine_data_us.csv')
+    with open((csvfolder + 'vaccine_data_us.csv'), 'wb') as f:
+        f.write(r.content)
+    print(str(r.status_code))
+    print(r.headers['content-type'])
+    print(r.encoding)
+    #end of get_data_to_csv_vac---------------------
+    
+    
 def get_data():    
     if os.path.exists(workfolder + 'web_get_page2.out'):
         os.remove(workfolder + 'web_get_page2.out')
@@ -191,6 +209,35 @@ def get_data():
     html = df_previous_day.to_html(na_rep='', escape=False,  formatters=dict(Chart_New_Deaths=path_to_image_html))
     webpage = webfolder + 'index2_coronavirus.html'
     make_html(webpage, html, total, usa_death_percentage_year_estimate)
+    
+    #10/5/2021
+    #Started to create new page with vaccination counts per state
+    df_vac = vaccine_doses()
+    df_vac = df_vac.drop(['Vaccine_Type'], axis=1)
+    df_vac['Population_2019'] = df_previous_day['Population_2019']
+    df_vac['Vac/Population'] = df_vac['Doses_admin'] / df_vac['Population_2019']
+    df_vac['Deaths_As_%_of Population_2019'] = df_previous_day['Deaths_As_%_of Population_2019']
+
+    print('Making webpage for vaccines by state')
+    print('Saving plain html page only states_vaccines.html sorted by state (default)')
+    table = df_vac.to_html(na_rep='', escape=False)
+    wp = webfolder + 'states_vaccines.html'
+    with open(wp, "w", encoding="utf-8") as f:
+        f.write(table)
+    print('Making webpage for vaccines by Doses_admin')
+    print('Saving plain html page only states_vaccines_by_Doses_admin.html sorted by Doses_admin')
+    df_vac = df_vac.sort_values(by=['Doses_admin'])
+    table = df_vac.to_html(na_rep='', escape=False)
+    wp = webfolder + 'states_vaccines_by_Doses_admin.html'
+    with open(wp, "w", encoding="utf-8") as f:
+        f.write(table)
+    print('Making webpage for vaccines by Vac/Population')
+    print('Saving plain html page only states_vaccines_by_vac_population.html sorted by Vac/Population')
+    df_vac = df_vac.sort_values(by=['Vac/Population'])
+    table = df_vac.to_html(na_rep='', escape=False)
+    wp = webfolder + 'states_vaccines_by_vac_population.html'
+    with open(wp, "w", encoding="utf-8") as f:
+        f.write(table) 
     
     #end of get_data----------------------------------
 
