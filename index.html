@@ -1,13 +1,546 @@
-<html>
-    <body>
-        <title>
-        Coronavirus Data Site
-        </title>
-        <h1>
-        Coronavirus Data Site
-        </h1>
-        <a href="index_coronavirus.html">Coronavirus Daily Deaths</a><p>
-        <a href="index_vaers.html">VAERS Latest Deaths</a><p>
-	<a href="references2.html">Misc links</a><p>
-    </body>
-</html>
+<h1>Coronavirus USA Data - updated daily</h1><br><b>Date run: 2021-07-11 - Total new deaths for today: 139</b><br>Sorted by New_Deaths<br><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Last_Update</th>
+      <th>Deaths</th>
+      <th>Population_2018</th>
+      <th>Deaths_As_%_of Population_2018</th>
+      <th>New_Deaths</th>
+      <th>Chart_New_Deaths</th>
+    </tr>
+    <tr>
+      <th>Province_State</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Mississippi</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>7439</td>
+      <td>2986530.0</td>
+      <td>0.249085</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Mississippi.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Wisconsin</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>8182</td>
+      <td>5813568.0</td>
+      <td>0.140740</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Wisconsin.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Montana</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>1673</td>
+      <td>1062305.0</td>
+      <td>0.157488</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Montana.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Nebraska</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>2262</td>
+      <td>1929268.0</td>
+      <td>0.117247</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Nebraska.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Nevada</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>5720</td>
+      <td>3034392.0</td>
+      <td>0.188506</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Nevada.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>New Hampshire</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>1375</td>
+      <td>1356458.0</td>
+      <td>0.101367</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/New Hampshire.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>New Mexico</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>4354</td>
+      <td>2095428.0</td>
+      <td>0.207786</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/New Mexico.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>North Carolina</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>13483</td>
+      <td>10383620.0</td>
+      <td>0.129849</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/North Carolina.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>North Dakota</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>1563</td>
+      <td>760077.0</td>
+      <td>0.205637</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/North Dakota.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Northern Mariana Islands</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>2</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Northern Mariana Islands.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Ohio</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>20380</td>
+      <td>11689442.0</td>
+      <td>0.174345</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Ohio.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Minnesota</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>7715</td>
+      <td>5611179.0</td>
+      <td>0.137493</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Minnesota.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Oklahoma</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>7406</td>
+      <td>3943079.0</td>
+      <td>0.187823</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Oklahoma.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Puerto Rico</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>2554</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Puerto Rico.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Rhode Island</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>2730</td>
+      <td>1057315.0</td>
+      <td>0.258201</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Rhode Island.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>South Carolina</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>9846</td>
+      <td>5084127.0</td>
+      <td>0.193662</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/South Carolina.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>South Dakota</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>2039</td>
+      <td>882235.0</td>
+      <td>0.231118</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/South Dakota.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Tennessee</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>12596</td>
+      <td>6770010.0</td>
+      <td>0.186056</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Tennessee.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Utah</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>2393</td>
+      <td>3161105.0</td>
+      <td>0.075701</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Utah.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Vermont</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>258</td>
+      <td>626299.0</td>
+      <td>0.041194</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Vermont.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Virgin Islands</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>32</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Virgin Islands.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Washington</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>5997</td>
+      <td>7535591.0</td>
+      <td>0.079582</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Washington.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>West Virginia</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>2908</td>
+      <td>1805832.0</td>
+      <td>0.161034</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/West Virginia.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Oregon</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>2792</td>
+      <td>4190713.0</td>
+      <td>0.066624</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Oregon.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Michigan</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>21059</td>
+      <td>9995915.0</td>
+      <td>0.210676</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Michigan.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Wyoming</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>751</td>
+      <td>577737.0</td>
+      <td>0.129990</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Wyoming.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Georgia</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>21486</td>
+      <td>10519475.0</td>
+      <td>0.204250</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Georgia.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Delaware</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>1695</td>
+      <td>967171.0</td>
+      <td>0.175253</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Delaware.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Florida</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>38157</td>
+      <td>21299325.0</td>
+      <td>0.179147</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Florida.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Massachusetts</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>18011</td>
+      <td>6902149.0</td>
+      <td>0.260948</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Massachusetts.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Grand Princess</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>3</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Grand Princess.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Guam</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>141</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Guam.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Connecticut</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>8279</td>
+      <td>3572665.0</td>
+      <td>0.231732</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Connecticut.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Idaho</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>2165</td>
+      <td>1754208.0</td>
+      <td>0.123418</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Idaho.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Arkansas</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>5948</td>
+      <td>3013825.0</td>
+      <td>0.197357</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Arkansas.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Illinois</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>25730</td>
+      <td>12741080.0</td>
+      <td>0.201945</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Illinois.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>American Samoa</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/American Samoa.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Indiana</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>13914</td>
+      <td>6691878.0</td>
+      <td>0.207924</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Indiana.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Iowa</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>6149</td>
+      <td>3156145.0</td>
+      <td>0.194826</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Iowa.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Kansas</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>5176</td>
+      <td>2911505.0</td>
+      <td>0.177777</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Kansas.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Kentucky</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>7255</td>
+      <td>4468402.0</td>
+      <td>0.162362</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Kentucky.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Alaska</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>379</td>
+      <td>737438.0</td>
+      <td>0.051394</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Alaska.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Louisiana</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>10781</td>
+      <td>4659978.0</td>
+      <td>0.231353</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Louisiana.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Maine</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>862</td>
+      <td>1338404.0</td>
+      <td>0.064405</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Maine.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>District of Columbia</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>1143</td>
+      <td>702455.0</td>
+      <td>0.162715</td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/District of Columbia.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Diamond Princess</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td><img src="/home/pi/Documents/state_deaths/Diamond Princess.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Maryland</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>9761</td>
+      <td>6042718.0</td>
+      <td>0.161533</td>
+      <td>1</td>
+      <td><img src="/home/pi/Documents/state_deaths/Maryland.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Hawaii</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>519</td>
+      <td>1420491.0</td>
+      <td>0.036537</td>
+      <td>2</td>
+      <td><img src="/home/pi/Documents/state_deaths/Hawaii.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Virginia</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>11448</td>
+      <td>8517685.0</td>
+      <td>0.134403</td>
+      <td>2</td>
+      <td><img src="/home/pi/Documents/state_deaths/Virginia.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Alabama</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>11398</td>
+      <td>4887871.0</td>
+      <td>0.233189</td>
+      <td>4</td>
+      <td><img src="/home/pi/Documents/state_deaths/Alabama.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>New Jersey</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>26496</td>
+      <td>8908520.0</td>
+      <td>0.297423</td>
+      <td>5</td>
+      <td><img src="/home/pi/Documents/state_deaths/New Jersey.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Missouri</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>9799</td>
+      <td>6126452.0</td>
+      <td>0.159946</td>
+      <td>5</td>
+      <td><img src="/home/pi/Documents/state_deaths/Missouri.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>New York</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>53726</td>
+      <td>19542209.0</td>
+      <td>0.274923</td>
+      <td>7</td>
+      <td><img src="/home/pi/Documents/state_deaths/New York.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Pennsylvania</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>27736</td>
+      <td>12807060.0</td>
+      <td>0.216568</td>
+      <td>7</td>
+      <td><img src="/home/pi/Documents/state_deaths/Pennsylvania.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Colorado</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>6837</td>
+      <td>5695564.0</td>
+      <td>0.120041</td>
+      <td>11</td>
+      <td><img src="/home/pi/Documents/state_deaths/Colorado.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Texas</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>52606</td>
+      <td>28701845.0</td>
+      <td>0.183284</td>
+      <td>18</td>
+      <td><img src="/home/pi/Documents/state_deaths/Texas.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>Arizona</th>
+      <td>2021-07-10 04:31:17</td>
+      <td>18009</td>
+      <td>7171646.0</td>
+      <td>0.251114</td>
+      <td>20</td>
+      <td><img src="/home/pi/Documents/state_deaths/Arizona.jpg" width="200" ></td>
+    </tr>
+    <tr>
+      <th>California</th>
+      <td>2021-07-10 07:30:42</td>
+      <td>63875</td>
+      <td>39557045.0</td>
+      <td>0.161476</td>
+      <td>57</td>
+      <td><img src="/home/pi/Documents/state_deaths/California.jpg" width="200" ></td>
+    </tr>
+  </tbody>
+</table><p><a href="index2.html">Sorted by Deaths_As_%_of Population_2018</a><p><a href="references2.html">Misc links</a><p></body></html>
