@@ -237,7 +237,14 @@ def get_data():
     table = df_vac.to_html(na_rep='', escape=False)
     wp = webfolder + 'states_vaccines_by_vac_population.html'
     with open(wp, "w", encoding="utf-8") as f:
-        f.write(table) 
+        f.write(table)
+    print('Making webpage for vaccines by Deaths_As_%_of Population_2019')
+    print('Saving plain html page only states_vaccines_by_Deaths_As_%_of Population_2019.html sorted by Deaths_As_%_of Population_2019')
+    df_vac = df_vac.sort_values(by=['Deaths_As_%_of Population_2019'])
+    table = df_vac.to_html(na_rep='', escape=False)
+    wp = webfolder + 'states_vaccines_by_Deaths_As_percent_of_Population_2019.html'
+    with open(wp, "w", encoding="utf-8") as f:
+        f.write(table)      
     
     #end of get_data----------------------------------
 
