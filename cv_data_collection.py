@@ -139,6 +139,80 @@ def load_all_csv_files(csvfolder):
             if check_existing(csvfile) == False:
                 load_csv_file(csvfile)    
 
+#10/26/2021
+#used by vaccine_doses
+def get_data_to_csv_vac(url):
+    # url = urlbase + csvfile
+    print(url)
+    print('Beginning file download with requests: vaccine_data_us.csv')
+    r = requests.get(url)
+    if os.path.exists(csvfolder + 'vaccine_data_us.csv'):
+        os.remove(csvfolder + 'vaccine_data_us.csv')
+    with open((csvfolder + 'vaccine_data_us.csv'), 'wb') as f:
+        f.write(r.content)
+    print(str(r.status_code))
+    print(r.headers['content-type'])
+    print(r.encoding)
+
+#10/26/2021
+def vaccine_doses():
+    #8/10/2021rf_model_on_full_data
+    vaccine_data_us_csv_url = 'https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv'
+    get_data_to_csv_vac(vaccine_data_us_csv_url)
+    # Sample data
+    # FIPS  ,   Province_State    ,    Country_Region    ,    Date          ,       Lat        ,     Long_     ,     Vaccine_Type   , Doses_alloc    ,    Doses_shipped   ,   Doses_admin    ,   Stage_One_Doses    ,   Stage_Two_Doses   ,   Combined_Key
+    # 1     ,   Alabama           ,        US            ,    2021-08-10    ,       32.3182     ,    -86.9023  ,     Pfizer         ,                ,    2608740         ,   1898892        ,                      ,   832153            ,   "Alabama, US"
+    # 1,Alabama,US,2021-08-10,32.3182,-86.9023,Moderna,,2439960,1689328,,751583,"Alabama, US"
+    # 1,Alabama,US,2021-08-10,32.3182,-86.9023,All,,5330000,3712533,2217468,1583987,"Alabama, US"
+   
+    # cols_chosen = 'Province_State,Vaccine_Type, Doses_admin'
+    file = csvfolder + 'vaccine_data_us.csv'
+    df_vac = pd.read_csv(file, encoding='latin1',thousands=',', low_memory=False, usecols = ['Province_State','Vaccine_Type','Doses_admin'])
+    df_vac = df_vac.set_index('Province_State')
+    df_vac = df_vac.drop_duplicates()
+    # df_vac2 = df_vac
+    # 9/28/2021 sample data
+    # Province_State,Vaccine_Type,Doses_admin
+    # Alabama,Pfizer,2367864.0
+    # Alabama,Moderna,1988601.0
+    # Alabama,All,4494228.0
+    # Alabama,Unassigned,0.0
+    # Alabama,Janssen,137708.0
+    # Alabama,Unknown,55.0
+    # Alaska,Janssen,33899.0
+    #df_vac2.to_csv( csvfolder + 'vaccine_data_us2.csv', index=True, encoding='utf-8')
+    mask = (df_vac['Vaccine_Type'] == 'All') 
+    df_vac = df_vac.loc[mask]
+    df_vac.to_csv( csvfolder + 'vaccine_data_us2.csv', index=True, encoding='utf-8')
+
+
+    #8/15/2021
+    #commented 10/26/2021
+    # mask = (df_vac['Vaccine_Type'] == 'Pfizer') |  (df_vac['Vaccine_Type'] == 'Moderna') 
+    # df_vac = df_vac.loc[mask]
+    # df_vac['Total_Doses'] = df_vac.groupby(['Province_State']).sum('Doses_admin')
+    # df_vac = df_vac.drop(['Vaccine_Type', 'Doses_admin'], axis=1)
+    # df_vac = df_vac.drop_duplicates()
+    # # df_vac = df_vac.sort_values(by=['Total_Doses'])
+
+    # columns = df_vac.columns
+    # print('Columns chosen:')
+    # for x in columns:
+    #     print(x)
+    # print(df_vac.head())
+    # print(df_vac.describe())
+
+    # #export to csv
+    # # df_vac.to_csv( csvfolder + 'df_vac.csv', index=False, encoding='utf-8')
+    # df_vac.to_csv( csvfolder + 'df_vac.csv', index=True, encoding='utf-8')
+
+    # end of vaccine_doses-------------------------------------------------------------------
+    
+
+#-----end of functions---------------------------------------------------------------
+
+
+
 
 
 #9/3/2021
@@ -148,6 +222,7 @@ def load_all_csv_files(csvfolder):
 if __name__ == '__main__':
     get_data()
     load_all_csv_files(csvfolder)
+    vaccine_doses()
     # r = find_date_in_file('c:/coronavirus/csv/10-18-2021.csv')
     # print(r)
     # check_existing('c:/coronavirus/csv/10-18-2021.csv')
