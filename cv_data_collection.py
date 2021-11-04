@@ -1,9 +1,15 @@
 #!/usr/bin/python3.7
 #cv_data_collection.py
 #inital version from web_get_page3.py, simplify process
-#version in dell desktop
+#version in rpi 6253
+#brings data to daily file MM-DD-YYYY.csv
+#append data to database file (keeps history)
+#creates vaccine files 
+#vaccine_data_us.csv (daily update of vaccines in all states USA)
+#vaccine_data_us2.csv(same as vaccine_data_us.csv keeping only columns for state, allvaccines, total)
 
 #last update
+#imported to rpi 6253 from desktop
 #10/26/2021 good test bringing file and adding it to dbfile if not exists
 
 
@@ -21,11 +27,15 @@ import csv
 
 #-----------------globals--------------------------------------------
 
-webfolder = ''
-workfolder = ''
-picsfolder = 'state_deaths/'
-csvfolder = 'C:/coronavirus/csv/'
-dbfile = 'C:/coronavirus/backup/data_usa.csv'
+#webfolder = ''
+webfolder = '/var/www/html/coronavirus/'
+#workfolder = ''
+workfolder = '/home/pi/Documents/'
+#picsfolder = 'state_deaths/'
+#csvfolder = 'C:/coronavirus/csv/'
+csvfolder = '/home/pi/Documents/'
+#dbfile = 'C:/coronavirus/backup/data_usa.csv'
+dbfile = '/home/pi/Downloads/' + 'data_usa.csv'
 today = datetime.date.today()
 vaccine_data_us_csv_url = 'https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv'
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/'
@@ -46,8 +56,8 @@ def get_csv_filename(datestr):
     file = month + '-' + day + '-' + year + '.csv'
     return file
 
-
-def get_data_to_csv(csvfile, urlbase):
+#used in get_data
+def get_data_to_csv(urlbase, csvfile):
     url = urlbase + csvfile
     print(url)
     print('Beginning file download with requests: ' + csvfile)
@@ -69,10 +79,11 @@ def get_data():
     print('Latest file - yesterday:' + str(yesterday))
     yesterdayfile = get_csv_filename(yesterday)
     print(yesterdayfile)
-    get_data_to_csv(yesterdayfile, urlbase)
+    get_data_to_csv(urlbase, yesterdayfile)
     # next to add the data to the database file, see load_csv_file
     # end of get_data----------------------------------------
 
+# used by check_existing
 def find_date_in_file(file):
     with open((file), 'r') as f:
         r = f.readline()
@@ -141,15 +152,19 @@ def load_all_csv_files(csvfolder):
 
 #10/26/2021
 #used by vaccine_doses
-def get_data_to_csv_vac(url):
+def get_data_to_csv_vac(url, file):
     # url = urlbase + csvfile
     print(url)
     print('Beginning file download with requests: vaccine_data_us.csv')
     r = requests.get(url)
-    if os.path.exists(csvfolder + 'vaccine_data_us.csv'):
-        os.remove(csvfolder + 'vaccine_data_us.csv')
-    with open((csvfolder + 'vaccine_data_us.csv'), 'wb') as f:
+    if os.path.exists(csvfolder + file):
+        os.remove(csvfolder + file)
+    with open((csvfolder + file), 'wb') as f:
         f.write(r.content)
+    # if os.path.exists(csvfolder + 'vaccine_data_us.csv'):
+    #     os.remove(csvfolder + 'vaccine_data_us.csv')
+    # with open((csvfolder + 'vaccine_data_us.csv'), 'wb') as f:
+    #     f.write(r.content)
     print(str(r.status_code))
     print(r.headers['content-type'])
     print(r.encoding)
@@ -157,8 +172,7 @@ def get_data_to_csv_vac(url):
 #10/26/2021
 def vaccine_doses():
     #8/10/2021rf_model_on_full_data
-    vaccine_data_us_csv_url = 'https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv'
-    get_data_to_csv_vac(vaccine_data_us_csv_url)
+    get_data_to_csv_vac(vaccine_data_us_csv_url, 'vaccine_data_us.csv')
     # Sample data
     # FIPS  ,   Province_State    ,    Country_Region    ,    Date          ,       Lat        ,     Long_     ,     Vaccine_Type   , Doses_alloc    ,    Doses_shipped   ,   Doses_admin    ,   Stage_One_Doses    ,   Stage_Two_Doses   ,   Combined_Key
     # 1     ,   Alabama           ,        US            ,    2021-08-10    ,       32.3182     ,    -86.9023  ,     Pfizer         ,                ,    2608740         ,   1898892        ,                      ,   832153            ,   "Alabama, US"
@@ -215,15 +229,30 @@ def vaccine_doses():
 
 
 
-#9/3/2021
+#=======================PROGRAM STARTS HERE=================================================
 
 
 # Run program 
 if __name__ == '__main__':
+    # brings current coronavirus file (like 10-26-2021.csv)
     get_data()
+
+    # adds coronavirus file to database file dbfile.csv if not there already
     load_all_csv_files(csvfolder)
+
+    # brings data to vaccine_data_us.csv and vaccine_data_us2.csv 
+    # format vaccine_data_us.csv:
+    # FIPS,Province_State,Country_Region,Date,Lat,Long_,Vaccine_Type,Doses_alloc,Doses_shipped,Doses_admin,Stage_One_Doses,Stage_Two_Doses,Combined_Key
+    # 1,Alabama,US,2021-10-27,32.3182,-86.9023,Pfizer,,3608550,2570620,,1107492,"Alabama, US"
+    # 1,Alabama,US,2021-10-27,32.3182,-86.9023,Moderna,,3141900,2067258,,927741,"Alabama, US"
+    # 1,Alabama,US,2021-10-27,32.3182,-86.9023,All,,7069650,4779470,2653566,2037832,"Alabama, US"
+    # 1,Alabama,US,2021-10-27,32.3182,-86.9023,Unassigned,,0,0,2510002,2599,"Alabama, US"
+    # 1,Alabama,US,2021-10-27,32.3182,-86.9023,Janssen,,319200,141441,143564,,"Alabama, US"
+    # 1,Alabama,US,2021-10-27,32.3182,-86.9023,Unknown,,0,151,,,"Alabama, US"
+    # format vaccine_data_us2.csv:
+    # Province_State,Vaccine_Type,Doses_admin
+    # Alabama,All,4779470.0
+    # Alaska,All,857746.0
+    # Arizona,All,8674092.0
     vaccine_doses()
-    # r = find_date_in_file('c:/coronavirus/csv/10-18-2021.csv')
-    # print(r)
-    # check_existing('c:/coronavirus/csv/10-18-2021.csv')
-    
+   
