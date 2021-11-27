@@ -4,6 +4,7 @@
 #11/25/2021
 import os
 import random
+import re
 
 #----------------globals--------------
 
@@ -12,6 +13,7 @@ BOOKFOLDER = 'C:/coronavirus/test'
 print(BOOKFOLDER)
 booklist = os.listdir(BOOKFOLDER)
 print(booklist)
+OUTFILE = 'c:/coronavirus/essay.txt'
 
 #----------------end of globals--------
 
@@ -36,7 +38,9 @@ def get_sentences(book):
         txt = f.read()
     # a = txt.split('.')
     b = txt.replace('\n', ' ')
-    a = b.replace(r"\\", '')
+    d = b.replace(r"  ", ' ')
+    c = d.replace(r"\r", '')
+    a = c.replace(r"\\", '')
     # b = str(txt.split('\n\n'))
     # a = b.split('.')
     return a
@@ -47,32 +51,39 @@ def get_all_books():
     s = ''
     
     for x in booklist:
-        
+        # get text of book, append to string
         m = get_sentences(x)
         s = s + ' ' + m
+
     lst = s.split('.')
 
     return lst
 
+
+def save_file(filename, content):
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(content)  
 #----------------end of functions------
 
 
 #----------------program start---------
 lst = get_all_books()
 random.shuffle(lst)
+# dd:dd 
+line = ''
+# line = re.sub(r"</?\[\d+>", "", line)
+# line = re.sub(r"\d+:\d+", "", line)
+
 s = ''
 for x in lst:
+    # remove line in all caps
+    if x.isupper(): x = ''
+    # remove 1:22
+    x = re.sub(r"\d+[:]\d+", "", x)
     s = s + '. ' + x
-print(s)
-# for x in lst:
-#     b = str(x)
-#     c = b.replace(r'\n',' ')
-#     d = c.replace('\\','')
-#     print(d)
 
-# c = b.replace(r'\n',' ')
-# d = c.replace('\\','')
-# print(d)
+save_file(OUTFILE, s)
+
 
 #----------------program end-----------
 
