@@ -8,7 +8,7 @@ import re
 
 #----------------globals--------------
 
-BOOKFOLDER = 'C:/Users/admin/Documents/books'
+# BOOKFOLDER = 'C:/Users/admin/Documents/books'
 BOOKFOLDER = 'C:/coronavirus/test'
 print(BOOKFOLDER)
 booklist = os.listdir(BOOKFOLDER)
@@ -33,7 +33,7 @@ def get_sentences1(book):
     return a[0:5]
     # pass
 
-def get_sentences(book):    
+def get_book_text(book):    
     with open((BOOKFOLDER + '/' + book), encoding="utf-8") as f:
         txt = f.read()
     # a = txt.split('.')
@@ -52,10 +52,18 @@ def get_all_books():
     
     for x in booklist:
         # get text of book, append to string
-        m = get_sentences(x)
-        s = s + ' ' + m
+        m = get_book_text(x)
+        s = s + '.' + m
 
+        # Splitting characters in String 
+        #res = re.split(', |_|-|!', data)
+        # lst = re.split('.', s)
+        #lst = s.split('.')
+
+    # lst.append(lst2)
     lst = s.split('.')
+    random.shuffle(lst)
+    # lst = re.split('.', s)
 
     return lst
 
