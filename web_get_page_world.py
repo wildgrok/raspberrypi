@@ -1,6 +1,7 @@
 #!/usr/bin/python3.7
-#desktop version, Spain
+#dell laptop, Spain (now all countries)
 #last modified
+#12/11/2021 reconfiguring for all countries
 #created 6/12/2020
 
 
@@ -12,13 +13,15 @@ import pandas as pd
 import datetime
 
 # workfolder = 'C:\Users\python\PycharmProjects\'
-webfolder = '/var/www/html/'
-workfolder = '/home/pi/Desktop/'
+# webfolder = '/var/www/html/'
+# workfolder = '/home/pi/Desktop/'
+webfolder = 'c:/coronavirus/'
+workfolder = 'c:/coronavirus/'
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/'
 
 
 def writelog(data):
-    with open((workfolder + 'web_get_page_spain.out'), 'a+') as f:
+    with open((workfolder + 'web_get_page_world.out'), 'a+') as f:
         f.write(data + '\n')
         
 def get_csv_filename(datestr):
@@ -51,8 +54,8 @@ def get_data_to_csv(csvfile, urlbase):
     writelog(csvfile)
 
 def get_data():    
-    if os.path.exists(workfolder + 'web_get_page_spain.out'):
-        os.remove(workfolder + 'web_get_page_spain.out') 
+    if os.path.exists(workfolder + 'web_get_page_world.out'):
+        os.remove(workfolder + 'web_get_page_world.out') 
     writelog(sys.version)
     today = datetime.date.today()
     yesterday = today - datetime.timedelta(days=1)
@@ -69,11 +72,11 @@ def get_data():
 
     #6/12/2020
     # country = ['Spain', 'France','Sweden']
-    country = ['Spain']
+    #country = ['Spain']
     df1 = pd.read_csv((workfolder + yesterdayfile), encoding = 'latin1')
     # df = df1[df1.Country_Region='US']
-    df = df1[df1['Country_Region'].isin(country)]
-    df = df.set_index('Province_State')
+    #df = df1[df1['Country_Region'].isin(country)]
+    df = df1.set_index('Province_State')
     #6/12/2020
     # writelog('these are the columns - current day')
     # for col in df.columns:
@@ -95,8 +98,8 @@ def get_data():
     df = df.drop(['Lat', 'Long_', 'FIPS', 'Admin2'], axis=1)
     for col in df.columns:
         writelog(col)
-    html = df.to_html()
-    webpage = webfolder + 'daily_report_spain.html'
+    html = df.to_html(na_rep='')
+    webpage = webfolder + 'daily_report_world.html'
     with open(webpage, 'wt') as f:
         f.write(html)
     # FIPS  Admin2  Country_Region  Last_Update Lat Long_   Confirmed   Deaths  Recovered   Active  Combined_Key    Incidence_Rate  Case-Fatality_Ratio
