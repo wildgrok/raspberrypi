@@ -7,6 +7,7 @@
 
 import sys
 import os
+from numpy import longlong
 import requests
 import pandas as pd
 #import numpy as np
@@ -18,11 +19,19 @@ import datetime
 webfolder = 'c:/coronavirus/'
 workfolder = 'c:/coronavirus/'
 urlbase = r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/'
-
+world_population = 'world_population_2020.csv'
+world_deaths = 'world_deaths.csv'
 
 def writelog(data):
     with open((workfolder + 'web_get_page_world.out'), 'a+') as f:
         f.write(data + '\n')
+
+def make_webpage(df, webpage):
+    html = df.to_html(na_rep='')
+    webpage = webfolder + webpage
+    with open(webpage, 'wt') as f:
+        f.write(html)
+        
         
 def get_csv_filename(datestr):
     month = str(datestr.month)
@@ -34,7 +43,7 @@ def get_csv_filename(datestr):
         day = '0' + day
     file = month + '-' + day + '-' + year + '.csv'
     return file
-
+# csvfile is in form 12-15-2021.csv
 def get_data_to_csv(csvfile, urlbase):
     url = urlbase + csvfile
     writelog(url)
@@ -45,8 +54,8 @@ def get_data_to_csv(csvfile, urlbase):
     with open((workfolder + csvfile), 'wb') as f:
         f.write(r.content)
     #making backup
-    with open((workfolder + ('full_' + csvfile)), 'wb') as f:
-        f.write(r.content)
+    # with open((workfolder + ('full_' + csvfile)), 'wb') as f:
+    #     f.write(r.content)
     # Retrieve HTTP meta-data    
     writelog(str(r.status_code))
     writelog(r.headers['content-type'])
@@ -60,93 +69,78 @@ def get_data():
     today = datetime.date.today()
     yesterday = today - datetime.timedelta(days=1)
     writelog('Today:' + str(today))
-    writelog('Latest file - yesterday:' + str(yesterday))
-    weekago = today - datetime.timedelta(days=7)
-    #weekago = today - datetime.timedelta(days=14)
-    writelog('File -week ago:' + str(weekago))
     yesterdayfile = get_csv_filename(yesterday)
-    weekagofile = get_csv_filename(weekago) 
+    writelog('Latest file - yesterday:' + str(yesterday))
     writelog(yesterdayfile)
-    writelog(weekagofile)
     get_data_to_csv(yesterdayfile, urlbase)
 
-    #6/12/2020
-    # country = ['Spain', 'France','Sweden']
-    #country = ['Spain']
     df1 = pd.read_csv((workfolder + yesterdayfile), encoding = 'latin1')
-    # df = df1[df1.Country_Region='US']
-    #df = df1[df1['Country_Region'].isin(country)]
-    df = df1.set_index('Province_State')
-    #6/12/2020
-    # writelog('these are the columns - current day')
-    # for col in df.columns:
-    #     writelog(col)
-
-    # for later: check for no file FileNotFoundError: [Errno 2] No such file or directory: '05-02-2020.csv'
-    # if os.path.exists(workfolder + weekagofile) == False:
-    #     weekagofile = yesterdayfile
-
-    # df_previous = pd.read_csv((workfolder + weekagofile), encoding = 'latin1')
-    # df_previous = df_previous.set_index('Province_State')
-
-    #New 6/7/2020, saving full report with all the original columns
-    #writelog('these are all the columns - current full')
+    df = df1.set_index('Country_Region')
+    
+    # these are all the columns
     #Country_Region,Last_Update Lat Long_ Confirmed Deaths
     # Recovered Active FIPS Incident_Rate
     # People_Tested People_Hospitalized Mortality_Rate UID
     #ISO3 Testing_Rate Hospitalization_Rate
-    df = df.drop(['Lat', 'Long_', 'FIPS', 'Admin2'], axis=1)
+    # 
+    df = df.drop(['Province_State', 'Lat', 'Long_', 'FIPS', 'Admin2', 'Confirmed', 'Recovered', 'Active','Combined_Key',	'Incident_Rate',	'Case_Fatality_Ratio'], axis=1)
+
+    df = df.groupby(['Country_Region'])['Deaths'].sum().reset_index()
+    df.rename(columns = {'Country_Region':'Province_State'}, inplace = True)
+    # for col in df.columns:
+    #     print(col)
+    df.set_index('Province_State')
+    make_webpage(df, 'daily_report_world.html')
+
+    return df
+
+# new 12/14/2021
+def get_world_population():
+    file = workfolder + world_population
+    columns = [r"Country Name", r"2020"]
+    df1 = pd.read_csv(file, encoding='latin1',thousands=',', low_memory=False, usecols = columns)
+    #rename
+    df1.rename(columns = {'Country Name':'Province_State','2020':'Population'}, inplace = True)
+    df = df1.set_index('Province_State')
+    df.to_csv( workfolder + 'world_population_2020_dataframe.csv', index=True, encoding='utf-8')
     for col in df.columns:
-        writelog(col)
-    html = df.to_html(na_rep='')
-    webpage = webfolder + 'daily_report_world.html'
-    with open(webpage, 'wt') as f:
-        f.write(html)
-    # FIPS  Admin2  Country_Region  Last_Update Lat Long_   Confirmed   Deaths  Recovered   Active  Combined_Key    Incidence_Rate  Case-Fatality_Ratio
-    #Province_State Country_Region  Last_Update Lat Long_   Confirmed   Deaths  Recovered   Active  FIPS    Incident_Rate   People_Tested   People_Hospitalized Mortality_Rate  UID ISO3    Testing_Rate    Hospitalization_Rate
-    #df = df.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3',    'Testing_Rate',    'Hospitalization_Rate'], axis=1)
-    # df = df.drop(['Country_Region','Lat', 'Long_', 'FIPS', 'Admin2'], axis=1)
-
-
-        
-    # df_previous = df_previous.drop(['Country_Region','Lat', 'Long_','Confirmed','Recovered',   'Active',  'FIPS',    'Incident_Rate',   'People_Tested',   'People_Hospitalized',  'UID', 'ISO3',    'Testing_Rate',    'Hospitalization_Rate'], axis=1)
-    # writelog('these are the columns - previous')
-    # for col in df_previous.columns:
-    #     writelog(col)
-    # html = df_previous.to_html()
-    # webpage = webfolder + 'previous.html'
-    # with open(webpage, 'wt') as f:
-    #     f.write(html)
-
-
-    #links to current week
-    # df_previous['Deaths_After'] = df['Deaths']                 #add the Price2 column from df2 to df1
-    # df_previous['Mortality_Rate_After'] = df['Mortality_Rate'] #add the Price2 column from df2 to df1
-    # df_previous['Deaths_Diff_After'] = np.where(df_previous['Deaths'] == df['Deaths'], 0, df['Deaths'] - df_previous['Deaths']) #create new column in df1 for price diff
-    # df_previous['Mortality_Rate_Diff'] = np.where(df_previous['Mortality_Rate'] == df['Mortality_Rate'], 0, df['Mortality_Rate'] - df_previous['Mortality_Rate']) #create new column in df1 for price diff
-    #
-    # # exporting to csv before sorting by Deaths diff
-    #
-    # df_previous.to_csv(workfolder + 'Differences_Report.csv')
-
-
-    #df_previous = df_previous.sort_values(by=['Deaths Diff'])
-    # df_previous = df_previous.sort_values(by=['Mortality_Rate_Diff'])
-    #
-    # writelog('these are the columns - added Mortality Rate After, Deaths After, MD Diff, Deaths Diff, Deaths_2018, Death_Rate_2018')
-    # for col in df_previous.columns:
-    #     writelog(col)
-    # html = df_previous.to_html()
-    # webpage = webfolder + 'difference.html'
-    # with open(webpage, 'wt') as f:
-    #     f.write(html)
-    #
-    # #making backup of differences
-    # webpage = webfolder + str(today) + '-difference.html'
-    # with open(webpage, 'wt') as f:
-    #     f.write(html)
-
+        print(col)
+    #12/18/2021
+    make_webpage(df, 'world_population_2020.html')
+    return df
 
 # Run program 
 if __name__ == '__main__':
-    get_data()
+    # get_data()
+    # get_world_population()
+    df = get_data()
+    # df = df.set_index('Province_State')
+    df2 = get_world_population()
+    # df2 = df2.set_index('Province_State')
+    # df2['2020'] = df2['2020'].astype(float)
+
+    # df['columnF'] = pd.Series(df1['columnF'])
+    # df['Population'] = pd.Series(df2['2020'])
+    # f_column = data2["columnF"]
+    # data1 = pd.concat([data1,f_column], axis = 1)
+    # data1
+    # f_column = df2["2020"]
+    # df = pd.concat([df,f_column], axis = 1)
+    
+
+
+    # df2 = df2.join(extracted_col)
+    # df = df.join(df2['2020'])
+    #print(df.describe)
+    print('---------df--------')
+    print(df)
+    print('----------df2-------')
+    print(df2)
+    # df.join(df2)
+    # # df['col1'] = df['col1'].astype(int)
+  
+    # print(df.describe)
+
+    # df.to_csv('c:/coronavirus/world_report_plus_population')
+
+    #adding world population to main data
