@@ -106,6 +106,20 @@ def get_world_population():
     for col in df1.columns:
         print(col)
     #12/18/2021
+    #make fixes
+    # df1.at['US', 'Province_State'] = 'United States'
+    df1.loc[df1.Province_State =='United States' ,'Province_State'] = 'US'
+    df1.loc[df1.Province_State =='Russian Federation' ,'Province_State'] = 'Russia'
+    df1.loc[df1.Province_State =='Slovak Republic' ,'Province_State'] = 'Slovakia'
+    df1.loc[df1.Province_State =='Syrian Arab Republic' ,'Province_State'] = 'Syria'
+    df1.loc[df1.Province_State =='Egypt, Arab Rep.' ,'Province_State'] = 'Egypt'
+    df1.loc[df1.Province_State =='Yemen, Rep.' ,'Province_State'] = 'Yemen'
+    # Slovak Republic
+    # Syrian Arab Republic
+    # Egypt, Arab Rep.
+    # Yemen, Rep.
+    # kids.loc[kids.Age == 15,'Age'] = 17
+
     make_webpage(df1, 'world_population_2020.html')
     return df1
 
@@ -118,6 +132,10 @@ if __name__ == '__main__':
     # add population
     df = df.join(df2.set_index('Province_State'), on='Province_State')
 
+    # add deaths as % of population
+    # df_previous_day['Deaths_As_%_of Population_2019'] = df_previous_day['Deaths'].divide(df_previous_day['Population_2019']) * 100
+    df['Deaths_As_%_of Population'] = df['Deaths'].divide(df['Population']) * 100
+
     # print('---------df--------')
     # print(df)
     # print('----------df2-------')
@@ -125,3 +143,6 @@ if __name__ == '__main__':
 
     # make web page
     make_webpage(df, 'world_deaths_and_population.html')
+    # sorted by deaths as % of population
+    df = df.sort_values(by=['Deaths_As_%_of Population'])
+    make_webpage(df, 'world_deaths_and_population2.html')
