@@ -30,6 +30,10 @@ def writelog(data):
 
 def make_webpage(df, webpage):
     # df = df.to_html(float_format='{:20,.2f}'.format)
+    df = df.reset_index()
+    df = df.rename(columns={"index":"Position"})
+    df['Position'] = df.index + 1
+    
     html = df.to_html(na_rep='', float_format='{:20}'.format, index=False)
     webpage = webfolder + webpage
     with open(webpage, 'wt') as f:
