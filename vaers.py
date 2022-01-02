@@ -1,50 +1,33 @@
 #vaers.py
-#version in dell laptop imported from rpi 6205
+#version in rpi 6205
 #last modified
-#8/17/2021 moved code of doses to function for clarity
-#8/16/2021 created graph vaers_vaccine_doses.jpg
-#8/15/2021 automating data from all data from zip file
-#8/10/2021 started to work on vaccines file to be continued
-#https://github.com/govex/COVID-19/blob/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv
+#8/15/2021 added deletion of movig av file before creation
+#8/4/2021 removed dead column from webpage
+#8/3/2021 changed sort order (most recent first)
 #7/31/2021 added moving averages
-#7/25/2021 fixed daterange
-#7/24/2021 imported from rpi 6205
+#7/30/2021 added drop_duplicates()
+#7/25/2021: fixed daterange
 #7/22/2021 imported from dell laptop
 #7/21/2021 changed web pages creation
 
 
 import csv
 import os
-import glob
 import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
-import requests
 today = datetime.date.today()
 
-#webfolder = '/var/www/html/coronavirus/'
-csvfolder = 'C:/coronavirus/'
-workfolder = csvfolder
-webfolder = csvfolder
-# workfolder = '/home/pi/Documents/'
-#8/15/2021
+webfolder = '/var/www/html/coronavirus/'
+#csvfolder = 'C:/coronavirus/csv/'
+workfolder = '/home/pi/Documents/'
+#dbfile = workfolder + '2020_AND_2021_VAERSData.csv'
+dbfile = workfolder + 'VAERSDATA.csv'
+#/home/pi/Documents/2021VAERSDATA.csv
+webpage = webfolder + 'vaers.html'
+webpage2 = webfolder + 'vaers2.html'
 
-#------------------------functions------------------------------------------
-# Updates VAERSDATA.csv from latest downloaded zip contents in 
-# C:\Users\admin\Downloads\AllVAERSDataCSVS
-def get_csvfile_combined(foldercsv):
-    os.chdir(foldercsv)
-    # os.chdir("/mydir")
-    #C:/Users/admin/Downloads/AllVAERSDataCSVS
-    extension = 'csv'
-    all_filenames = [i for i in glob.glob('????VAERSDATA.{}'.format(extension))]
-    print(all_filenames)
-    #combine all files in the list
-    combined_csv = pd.concat([pd.read_csv(f) for f in all_filenames ])
-    #export to csv
-    # combined_csv.to_csv( "VAERSDATA.csv", index=False, encoding='utf-8-sig')
-    combined_csv.to_csv( "VAERSDATA.csv", index=False, encoding='utf-8')
-
+#------functions-----------------------------------
 # webpage is the file like index.html (full path)
 # table is the html content as table, coming from dataframe.to_csv
 # total is the count of the table items
@@ -64,104 +47,25 @@ def make_html(webpage,table, total, daterange, message=''):
     with open(webpage, "w", encoding="utf-8") as f:
         f.write(s)
 
-def get_data_to_csv(url):
-    # url = urlbase + csvfile
-    print(url)
-    print('Beginning file download with requests: vaccine_data_us.csv')
-    r = requests.get(url)
-    if os.path.exists(csvfolder + 'vaccine_data_us.csv'):
-        os.remove(csvfolder + 'vaccine_data_us.csv')
-    with open((csvfolder + 'vaccine_data_us.csv'), 'wb') as f:
-        f.write(r.content)
-    print(str(r.status_code))
-    print(r.headers['content-type'])
-    print(r.encoding)
-    # print(csvfile)
-
-#8/17/2021 
-def vaccine_doses():
-    #8/10/2021rf_model_on_full_data
-    get_data_to_csv(vaccine_data_us_csv_url)
-    # Sample data
-    # FIPS  ,   Province_State    ,    Country_Region    ,    Date          ,       Lat        ,     Long_     ,     Vaccine_Type   , Doses_alloc    ,    Doses_shipped   ,   Doses_admin    ,   Stage_One_Doses    ,   Stage_Two_Doses   ,   Combined_Key
-    # 1     ,   Alabama           ,        US            ,    2021-08-10    ,       32.3182     ,    -86.9023  ,     Pfizer         ,                ,    2608740         ,   1898892        ,                      ,   832153            ,   "Alabama, US"
-    # 1,Alabama,US,2021-08-10,32.3182,-86.9023,Moderna,,2439960,1689328,,751583,"Alabama, US"
-    # 1,Alabama,US,2021-08-10,32.3182,-86.9023,All,,5330000,3712533,2217468,1583987,"Alabama, US"
-   
-    # cols_chosen = 'Province_State,Vaccine_Type, Doses_admin'
-    file = csvfolder + 'vaccine_data_us.csv'
-    df_vac = pd.read_csv(file, encoding='latin1',thousands=',', low_memory=False, usecols = ['Province_State','Vaccine_Type','Doses_admin'])
-    df_vac = df_vac.set_index('Province_State')
-    df_vac = df_vac.drop_duplicates()
-    #8/15/2021
-    mask = (df_vac['Vaccine_Type'] == 'Pfizer') |  (df_vac['Vaccine_Type'] == 'Moderna') 
-    df_vac = df_vac.loc[mask]
-    df_vac['Total_Doses'] = df_vac.groupby(['Province_State']).sum('Doses_admin')
-    df_vac = df_vac.drop(['Vaccine_Type', 'Doses_admin'], axis=1)
-    df_vac = df_vac.drop_duplicates()
-    # df_vac = df_vac.sort_values(by=['Total_Doses'])
-
-    columns = df_vac.columns
-    print('Columns chosen:')
-    for x in columns:
-        print(x)
-    print(df_vac.head())
-    print(df_vac.describe())
-
-    plt.figure(figsize=[15,10])
-    plt.grid(True)
-    plt.plot(df_vac['Total_Doses'],label='Total Doses')
-    # plt.plot(df_vac['SMA_7'],label='SMA 7 days')
-    plt.legend(loc=2)
-    statejpgfile = webfolder + 'vaers_vaccine_doses.jpg'
-    #delete if exists
-    if os.path.exists(statejpgfile):
-        os.remove(statejpgfile)
-    plt.savefig(statejpgfile)
-
-
-
-#------------------------end of functions------------------------------------------------------
-
-folder_csv = 'C:/Users/admin/Downloads/AllVAERSDataCSVS'
-print('All csv files:')
-get_csvfile_combined(folder_csv)
-os.chdir(workfolder)
-
-
-
-dbfile = folder_csv + '/' + 'VAERSDATA.csv'
-#/home/pi/Documents/VAERSDATA.csv
-webpage = webfolder + 'vaers.html'
-webpage2 = webfolder + 'vaers2.html'
-vaccine_data_us_csv_url = 'https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/us_data/hourly/vaccine_data_us.csv'
-
-pd.set_option('display.max_rows', 5)
-
-#8/17/2021 moved code to here for clarity
-vaccine_doses()
-
+#------end of functions----------------------------
 
 
 
 #create dataframe from dbfile
-print('dbfile: ', dbfile)
-# df1 = pd.read_csv(dbfile, encoding='latin1',thousands=',', low_memory=False, usecols = ['VAERS_ID','RECVDATE','SYMPTOM_TEXT','STATE','AGE_YRS','DIED'])
+pd.set_option('display.max_rows', 2)
 df1 = pd.read_csv(dbfile, encoding='latin1',thousands=',', low_memory=True, usecols = ['VAERS_ID','RECVDATE','SYMPTOM_TEXT','STATE','AGE_YRS','DIED'])
-
-# df1 = df1.drop_duplicates()
+df1 = df1.drop_duplicates()
 columns = df1.columns
 print('Columns chosen:')
 for x in columns:
     print(x)
+#7/25/2021    
 df1["RECVDATE"] = pd.to_datetime(df1["RECVDATE"])
 
-#8/15/2021
+#8/15/2021 limit to years 2020 and up
 mask = (df1['RECVDATE'] > '2019-12-31')
-# Select the sub-DataFrame:
-# df.loc[mask]
-# or re-assign to df
 df1 = df1.loc[mask]
+
 
 
 mindate = df1['RECVDATE'].min()
@@ -169,6 +73,8 @@ maxdate = df1['RECVDATE'].max()
 print('mindate, maxdate', mindate, maxdate)
 datesrange = 'Dates range:' + str(mindate) + ' to ' + str(maxdate)
 print(datesrange)
+#datesrange = 'Dates range:' + df1['RECVDATE'].min() + ' to ' + df1['RECVDATE'].max()
+#print(datesrange)
 # print(columns)
 # Index(['VAERS_ID', 'RECVDATE', 'STATE', 'AGE_YRS', 'CAGE_YR', 'CAGE_MO', 'SEX',
 #        'RPT_DATE', 'SYMPTOM_TEXT', 'DIED', 'DATEDIED', 'L_THREAT', 'ER_VISIT',
@@ -178,30 +84,27 @@ print(datesrange)
 #        'FORM_VERS', 'TODAYS_DATE', 'BIRTH_DEFECT', 'OFC_VISIT', 'ER_ED_VISIT',
 #        'ALLERGIES'],
 
-print('df1 no limitations count')
-print(df1.VAERS_ID.count())
-print('Saving file with selected columns, no limitations')
-df1.to_csv(workfolder + 'VAERS_ID-RECVDATE-SYMPTOM_TEXT-STATE-AGE_YRS-DIED.csv', index=False)
-
-
-df0= df1[(df1['DIED'] == 'Y')] #]) &  (df1['SYMPTOM_TEXT'].str.contains('covid', case = False) | df1['SYMPTOM_TEXT'].str.contains('coronavirus', case = False) )]
-print('df0 dead count')
-print(df0.VAERS_ID.count())
-print('Saving deaths file all columns')
-df0.to_csv(workfolder + 'vaers_covid_deaths0.csv', index=False)
-
-
-df1 = df0[ (df0['SYMPTOM_TEXT'].str.contains('covid', case = False) | df0['SYMPTOM_TEXT'].str.contains('coronavirus', case = False) ) ]
-df1 = df1.sort_values(by='RECVDATE', ascending = False)
+print('df1 no limitations count of deaths')
+#print(df1.VAERS_ID.count())
 deathscount = len(df1[df1['DIED'] == 'Y'])
 print(deathscount)
+
+
+df1 = df1[ (df1['DIED'] == 'Y') &  (df1['SYMPTOM_TEXT'].str.contains('covid', case = False) | df1['SYMPTOM_TEXT'].str.contains('coronavirus', case = False) )]
+df1 = df1.sort_values(by='RECVDATE', ascending=False)
+#df1 = df1[ (df1['DIED'] == 'Y')]
+#print("df1 DIED and SYMPTOM_TEXT > '' and SYMPTON_TEXT contains covid, moderna, johnson, zeneca,coronavirus count")
+
+#deathscount = str(df1.VAERS_ID.count())
+deathscount = len(df1[df1['DIED'] == 'Y'])
+print('deaths after limiting:',deathscount)
 print('Saving file all columns')
+#dropping redundant DIED column
+df3 = df1.drop(['DIED'], axis=1)
 df1.to_csv(workfolder + 'vaers_covid_deaths.csv', index=False)
 
-
 print('Creating main webpage vaers.html')
-df3 = df1.drop(['DIED'], axis=1)
-table = df1.to_html(na_rep='', escape=False)
+table = df3.to_html(na_rep='', escape=False)
 print('Saving plain html page only vaers_covid_deaths.html')
 wp = webfolder + 'vaers_covid_deaths.html'
 with open(wp, "w", encoding="utf-8") as f:
@@ -218,8 +121,14 @@ df = df.groupby('RECVDATE').count()
 # df now:
 # RECVDATE,DIED
 # 2021-01-01,1
+# 2021-01-03,2
+# 2021-01-05,5
 # ...
+# 2021-07-07,20
+# 2021-07-08,7
 # 2021-07-09,12
+
+
 
 total_deaths = df.DIED.sum()
 print('Total deaths after df.DIED.sum()')
@@ -256,7 +165,7 @@ plt.plot(df['SMA_30'],label='SMA 30 days')
 # plt.plot(df['SMA_4'],label='SMA 4 Months')
 plt.legend(loc=2)
 statejpgfile = webfolder + 'vaers_moving_average.jpg'
-#delete if exists
+#8/15/2021
 if os.path.exists(statejpgfile):
     os.remove(statejpgfile)
 plt.savefig(statejpgfile)
