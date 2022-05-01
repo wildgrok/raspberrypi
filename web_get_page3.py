@@ -2,6 +2,8 @@
 #version in rpi4gb
 #from web_get_page2.py
 #last modified
+#5/1/2022 commented line in webpage: Estimated yearly percentage of deaths if the year has this number of deaths every day
+#10/7/2021 added page states_vaccines_by_Deaths_As_percent_of Population_2019.html 
 #10/5/2021 added vac functions from desktop
 #8/29/2021 added total percentage
 #8/9/2021 changed for population 2019
@@ -68,7 +70,8 @@ def make_html(webpage,table, total, death_percent_today):
     s = '<h1>Coronavirus USA Data - updated daily</h1>'
     s = s + '<br><b>Date run: ' + today + ' - Total new deaths for today: ' + str(total) + '</b><p>'
     #8/29/2021
-    s = s + '<br><b>Estimated yearly percentage of deaths if the year has this number of deaths every day: ' + str(death_percent_today) + '</b><p>'    
+    #commented 5/1/2022
+    #s = s + '<br><b>Estimated yearly percentage of deaths if the year has this number of deaths every day: ' + str(death_percent_today) + '</b><p>'    
     s = s + '<b>Blue: 7 days moving average  -  Orange: 30 days moving average</b><p>'
     
     if webpage == webfolder + 'index_coronavirus.html':
@@ -238,6 +241,7 @@ def get_data():
     wp = webfolder + 'states_vaccines_by_vac_population.html'
     with open(wp, "w", encoding="utf-8") as f:
         f.write(table)
+    #10/7/2021    
     print('Making webpage for vaccines by Deaths_As_%_of Population_2019')
     print('Saving plain html page only states_vaccines_by_Deaths_As_%_of Population_2019.html sorted by Deaths_As_%_of Population_2019')
     df_vac = df_vac.sort_values(by=['Deaths_As_%_of Population_2019'])
